@@ -2,7 +2,7 @@ import { Head, Html, Main, NextScript } from 'next/document'
 
 const document = () => {
   return (
-    <Html lang="ko">
+    <Html lang="ko" suppressHydrationWarning>
       <Head></Head>
       <body>
         <Main />

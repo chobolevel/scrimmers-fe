@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { ResponsiveLayout } from '@/layout'
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
         {/*meta*/}
         <link rel="icon" href="/vercel.svg" />
       </Head>
+      <ResponsiveLayout>HOME</ResponsiveLayout>
     </>
   )
 }
