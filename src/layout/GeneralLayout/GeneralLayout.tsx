@@ -8,7 +8,7 @@ interface GeneralLayoutProps {
 
 const GeneralLayout = ({ children }: GeneralLayoutProps) => {
   return (
-    <Flex direction={'column'}>
+    <Flex minH={'100vh'} direction={'column'} bgColor={'blue.950'}>
       <GeneralLayoutHeader />
       {children}
       <GeneralLayoutFooter />
