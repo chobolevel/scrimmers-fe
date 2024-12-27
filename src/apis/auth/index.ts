@@ -1,10 +1,10 @@
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
-import { ApiResponse, UserLoginType } from '@/apis'
+import { Api, ApiResponse, UserLoginType } from '@/apis'
+import { ApiV1Paths } from '@/constants'
 
 export interface LoginRequest {
   email: string
-  password: string
+  password?: string
   social_id?: string
   login_type: UserLoginType
 }
@@ -12,21 +12,20 @@ export interface LoginRequest {
 export const useLogin = () => {
   return useMutation({
     mutationFn: (params: LoginRequest) =>
-      axios.post<ApiResponse<boolean>>(
-        'http://localhost:8080/api/v1/login',
-        params,
-      ),
+      Api.instance.post<ApiResponse<boolean>>(ApiV1Paths.LOGIN, params),
   })
 }
 
 export const useLogout = () => {
   return useMutation({
-    mutationFn: () => axios.post('http://localhost:8080/api/v1/logout'),
+    mutationFn: () =>
+      Api.instance.post<ApiResponse<boolean>>(ApiV1Paths.LOGOUT),
   })
 }
 
 export const useReissue = () => {
   return useMutation({
-    mutationFn: () => axios.post('http://localhost:8080/api/v1/reissue'),
+    mutationFn: () =>
+      Api.instance.post<ApiResponse<boolean>>(ApiV1Paths.REISSUE),
   })
 }

@@ -3,8 +3,8 @@ import React, { useMemo } from 'react'
 import { GeneralLayout, MobileLayout } from '@/layout'
 
 enum LayoutType {
-  MOBILE,
   GENERAL,
+  MOBILE,
 }
 
 interface ResponsiveLayoutProps {
@@ -19,9 +19,9 @@ const ResponsiveLayout = ({ children }: ResponsiveLayoutProps) => {
 
   const Layout = useMemo(() => {
     switch (layoutType) {
-      case LayoutType.GENERAL:
+      case 0:
         return GeneralLayout
-      case LayoutType.MOBILE:
+      case 1:
         return MobileLayout
       default:
         throw new Error(`Invalid layout: ${layoutType}`)
