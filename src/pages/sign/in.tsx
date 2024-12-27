@@ -1,7 +1,8 @@
 import Head from 'next/head'
-import { ResponsiveLayout } from '@/layout'
+import { UnAuthenticatedLayout } from '@/layout'
+import { SignInForm } from '@/components'
 
-const HomePage = () => {
+const SignInPage = () => {
   return (
     <>
       <Head>
@@ -13,9 +14,11 @@ const HomePage = () => {
         {/*meta*/}
         <link rel="icon" href="/vercel.svg" />
       </Head>
-      <ResponsiveLayout>홈</ResponsiveLayout>
+      <UnAuthenticatedLayout>
+        <SignInForm />
+      </UnAuthenticatedLayout>
     </>
   )
 }
 
-export default HomePage
+export default SignInPage
