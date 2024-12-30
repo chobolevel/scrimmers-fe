@@ -21,3 +21,8 @@ export interface Schema {
   created_at: number
   updated_at: number
 }
+
+export interface ApiPagingRequest {
+  skipCount: number
+  limitCount: number
+}
