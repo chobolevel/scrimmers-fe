@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { ResponsiveLayout } from '@/layout'
+import { UnAuthenticatedLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import {
@@ -85,11 +85,11 @@ const NaverCodePage = () => {
         {/*meta*/}
         <link rel="icon" href="/vercel.svg" />
       </Head>
-      <ResponsiveLayout>
+      <UnAuthenticatedLayout>
         <Flex w={'100%'} h={1000} justify={'center'} align={'center'}>
           <Spinner size={'lg'} />
         </Flex>
-      </ResponsiveLayout>
+      </UnAuthenticatedLayout>
     </>
   )
 }

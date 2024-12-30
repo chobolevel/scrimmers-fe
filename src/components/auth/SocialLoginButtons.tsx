@@ -1,5 +1,9 @@
 import { Flex, Link } from '@chakra-ui/react'
-import { KakaoLoginPageUrl, NaverLoginPageUrl } from '@/apis'
+import {
+  GoogleLoginPageUrl,
+  KakaoLoginPageUrl,
+  NaverLoginPageUrl,
+} from '@/apis'
 import { RiKakaoTalkFill } from 'react-icons/ri'
 import { SiNaver } from 'react-icons/si'
 import { FaGoogle } from 'react-icons/fa'
@@ -23,7 +27,7 @@ const SocialLoginButtons = () => {
       >
         <SiNaver size={24} color={'white'} />
       </Link>
-      <Link p={4} borderRadius={10} bgColor={'gray'}>
+      <Link p={4} borderRadius={10} bgColor={'gray'} href={GoogleLoginPageUrl}>
         <FaGoogle size={24} color={'white'} />
       </Link>
     </Flex>
