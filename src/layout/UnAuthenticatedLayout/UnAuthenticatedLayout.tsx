@@ -9,6 +9,7 @@ const UnAuthenticatedLayout = ({ children }: UnAuthenticatedLayoutProps) => {
   return (
     <Flex
       direction={'column'}
+      p={10}
       w={'100%'}
       minH={'100vh'}
       justify={'center'}
