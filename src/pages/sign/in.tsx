@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { UnAuthenticatedLayout } from '@/layout'
-import { SignInForm } from '@/components'
+import { Logo, SignInForm } from '@/components'
 
 const SignInPage = () => {
   return (
@@ -15,6 +15,7 @@ const SignInPage = () => {
         <link rel="icon" href="/vercel.svg" />
       </Head>
       <UnAuthenticatedLayout>
+        <Logo />
         <SignInForm />
       </UnAuthenticatedLayout>
     </>

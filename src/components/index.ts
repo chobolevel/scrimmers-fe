@@ -1,2 +1,2 @@
 export { SignInForm, SignUpForm, SocialLoginButtons } from './auth'
-export { ErrorText } from './common'
+export { ErrorText, Logo } from './common'
