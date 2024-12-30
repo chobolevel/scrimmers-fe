@@ -59,7 +59,7 @@ const KakaoCodePage = () => {
                   type: 'error',
                   title: '카카오 로그인 실패',
                   description:
-                    '카카로 로그인에 실패하였습니다. 다시 시도해 주세요.',
+                    '카카오 로그인에 실패하였습니다. 다시 시도해 주세요.',
                 })
               })
             })
@@ -70,7 +70,7 @@ const KakaoCodePage = () => {
               type: 'error',
               title: '카카오 로그인 실패',
               description:
-                '카카로 로그인에 실패하였습니다. 다시 시도해 주세요.',
+                '카카오 로그인에 실패하였습니다. 다시 시도해 주세요.',
             })
           })
         })
