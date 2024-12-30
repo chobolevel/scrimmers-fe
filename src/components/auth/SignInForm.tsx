@@ -72,6 +72,7 @@ const SignInForm = () => {
       <SocialLoginButtons />
       <Flex direction={'column'} gap={6} w={'100%'}>
         <Flex direction={'column'} gap={2}>
+          <Text fontWeight={'bold'}>아이디(이메일)</Text>
           <Input
             type={'text'}
             placeholder={'아이디(이메일)'}
@@ -87,6 +88,7 @@ const SignInForm = () => {
           />
         </Flex>
         <Flex direction={'column'} gap={2}>
+          <Text fontWeight={'bold'}>비밀번호</Text>
           <Input
             type={'password'}
             placeholder={'비밀번호'}
