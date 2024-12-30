@@ -71,7 +71,7 @@ const KakaoCodePage = () => {
         <link rel="icon" href="/vercel.svg" />
       </Head>
       <ResponsiveLayout>
-        <Flex w={'100vw'} h={'100vh'} justify={'center'} align={'center'}>
+        <Flex w={'100%'} h={500} justify={'center'} align={'center'}>
           <Spinner size={'lg'} />
         </Flex>
       </ResponsiveLayout>
