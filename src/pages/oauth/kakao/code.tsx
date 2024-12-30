@@ -6,11 +6,15 @@ import {
   KakaoTokenResponse,
   KakaoUserApi,
   KakaoUserResponse,
+  LoginRequest,
   useLogin,
 } from '@/apis'
 import Head from 'next/head'
 import { ResponsiveLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
+import { PagePaths } from '@/constants'
+import { toaster } from '@/components/ui/toaster'
+import { encodeToBase64 } from 'next/dist/build/webpack/loaders/utils'
 
 const KakaoCodePage = () => {
   const router = useRouter()
@@ -30,32 +34,45 @@ const KakaoCodePage = () => {
           KakaoUserApi.instance
             .get<KakaoUserResponse>('/v2/user/me')
             .then((res) => {
-              login(
-                {
-                  email: res.data.kakao_account.email,
-                  social_id: res.data.id,
-                  login_type: 'KAKAO',
+              const loginRequest = {
+                email: res.data.kakao_account.email,
+                social_id: res.data.id,
+                login_type: 'KAKAO',
+              } as LoginRequest
+              login(loginRequest, {
+                onSuccess: () => {
+                  router.push(PagePaths.HOME)
                 },
-                {
-                  onSuccess: () => {
-                    // TODO 홈 화면 리다이렉팅
-                    router.push('/')
-                  },
-                  onError: () => {
-                    // TODO 회원가입 화면 리다이렉팅
-                    router.push('/sign/up')
-                  },
+                onError: () => {
+                  router.push({
+                    pathname: PagePaths.SocialSignUp,
+                    query: {
+                      base: encodeToBase64(loginRequest),
+                    },
+                  })
                 },
-              )
+              })
             })
-            .catch((error) => {
-              // TODO 로그인 화면 리다이렉팅
-              console.log(error)
+            .catch(() => {
+              router.push(PagePaths.HOME).then(() => {
+                toaster.create({
+                  type: 'error',
+                  title: '카카오 로그인 실패',
+                  description:
+                    '카카로 로그인에 실패하였습니다. 다시 시도해 주세요.',
+                })
+              })
             })
         })
-        .catch((error) => {
-          // TODO 로그인 화면 리다이렉팅
-          console.error(error)
+        .catch(() => {
+          router.push(PagePaths.HOME).then(() => {
+            toaster.create({
+              type: 'error',
+              title: '카카오 로그인 실패',
+              description:
+                '카카로 로그인에 실패하였습니다. 다시 시도해 주세요.',
+            })
+          })
         })
     }
   }, [router])
@@ -71,7 +88,7 @@ const KakaoCodePage = () => {
         <link rel="icon" href="/vercel.svg" />
       </Head>
       <ResponsiveLayout>
-        <Flex w={'100%'} h={500} justify={'center'} align={'center'}>
+        <Flex w={'100%'} h={1000} justify={'center'} align={'center'}>
           <Spinner size={'lg'} />
         </Flex>
       </ResponsiveLayout>

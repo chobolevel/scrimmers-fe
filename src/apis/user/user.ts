@@ -1,6 +1,8 @@
 import {
   Api,
   ApiPagingRequest,
+  ApiPagingResponse,
+  ApiResponse,
   ID,
   Schema,
   UserImage,
@@ -88,6 +90,11 @@ export interface UpdateUserRequest {
   update_mask: UserUpdateMask[]
 }
 
+export interface ChangePasswordRequest {
+  current_password: string
+  new_password: string
+}
+
 export interface DeleteUserRequest {
   id: ID
 }
@@ -106,7 +113,7 @@ export const useGetUsers = (params?: GetUsersParams) => {
     queryKey: [ApiV1Paths.USERS],
     queryFn: () =>
       Api.instance
-        .get(toUrl(ApiV1Paths.USERS), { params })
+        .get<ApiPagingResponse<User[]>>(toUrl(ApiV1Paths.USERS), { params })
         .then((res) => res.data.data),
   })
 }
@@ -116,8 +123,19 @@ export const useGetUser = (id: ID) => {
     queryKey: [toUrl(ApiV1Paths.USERS, { id })],
     queryFn: () =>
       Api.instance
-        .get(toUrl(ApiV1Paths.USERS, { id }))
+        .get<ApiResponse<UserDetail>>(toUrl(ApiV1Paths.USERS, { id }))
         .then((res) => res.data.data),
+  })
+}
+
+export const useGetMe = () => {
+  return useQuery({
+    queryKey: [toUrl(ApiV1Paths.ME)],
+    queryFn: () =>
+      Api.instance
+        .get<ApiResponse<UserDetail>>(toUrl(ApiV1Paths.ME), {})
+        .then((res) => res.data.data)
+        .catch(() => null),
   })
 }
 
@@ -125,7 +143,18 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: (request: UpdateUserRequest) =>
       Api.instance
-        .put(toUrl(ApiV1Paths.USERS, { id: request.id }), request)
+        .put<
+          ApiResponse<ID>
+        >(toUrl(ApiV1Paths.USERS, { id: request.id }), request)
+        .then((res) => res.data.data),
+  })
+}
+
+export const useChangePassword = () => {
+  return useMutation({
+    mutationFn: (request: ChangePasswordRequest) =>
+      Api.instance
+        .put<ApiResponse<ID>>(toUrl(ApiV1Paths.USER_CHANGE_PASSWORD), request)
         .then((res) => res.data.data),
   })
 }
@@ -134,7 +163,7 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: (request: DeleteUserRequest) =>
       Api.instance
-        .delete(toUrl(ApiV1Paths.USERS, { id: request.id }))
+        .delete<ApiResponse<ID>>(toUrl(ApiV1Paths.USERS, { id: request.id }))
         .then((res) => res.data.data),
   })
 }

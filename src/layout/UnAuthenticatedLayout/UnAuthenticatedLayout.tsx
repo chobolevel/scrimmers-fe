@@ -15,7 +15,6 @@ const UnAuthenticatedLayout = ({ children }: UnAuthenticatedLayoutProps) => {
       justify={'center'}
       align={'center'}
       bgColor={'blue.950'}
-      color={'white'}
     >
       {children}
     </Flex>

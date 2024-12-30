@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 const GeneralLayoutFooter = () => {
   const year = useMemo(() => new Date().getFullYear(), [])
   return (
-    <Flex justify={'center'} color={'white'}>
+    <Flex justify={'center'}>
       <Flex
         w={'100%'}
         maxW={'1000px'}

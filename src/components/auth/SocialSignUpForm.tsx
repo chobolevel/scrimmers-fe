@@ -5,6 +5,20 @@ import {
   Input,
   Text,
 } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import { CSSProperties, useCallback, useEffect } from 'react'
+import { decodeFromBase64 } from 'next/dist/build/webpack/loaders/utils'
+import {
+  ApiErrorResponse,
+  CreateUserRequest,
+  LoginRequest,
+  useCreateUser,
+  useLogin,
+} from '@/apis'
+import { toaster } from '@/components/ui/toaster'
+import { AxiosError } from 'axios'
+import { ErrorText } from '@/components'
+import { ErrorMessage } from '@hookform/error-message'
 import {
   SelectContent,
   SelectItem,
@@ -13,15 +27,8 @@ import {
   SelectTrigger,
   SelectValueText,
 } from '@/components/ui/select'
-import { CSSProperties, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { ApiErrorResponse, CreateUserRequest, useCreateUser } from '@/apis'
-import { ErrorMessage } from '@hookform/error-message'
-import { ErrorText, SocialLoginButtons } from '@/components'
-import { AxiosError } from 'axios'
-import { toaster } from '@/components/ui/toaster'
-import { useRouter } from 'next/router'
-import { PagePaths } from '@/constants'
+import { PagePaths, toUrl } from '@/constants'
 
 const inputStyle = {
   paddingLeft: '2px',
@@ -41,16 +48,26 @@ const genders = createListCollection({
   ],
 })
 
-const SignUpForm = () => {
+const SocialSignUpForm = () => {
   const router = useRouter()
   const {
     handleSubmit,
     register,
-    watch,
+    setValue,
     formState: { errors },
   } = useForm<CreateUserRequest>()
 
   const { mutate: createUser } = useCreateUser()
+  const { mutate: login } = useLogin()
+
+  useEffect(() => {
+    if (router.query.base) {
+      const base = decodeFromBase64(router.query.base as string) as LoginRequest
+      setValue('email', base.email)
+      setValue('social_id', base.social_id)
+      setValue('login_type', base.login_type)
+    }
+  }, [router.query.base])
   return (
     <Flex
       as={'form'}
@@ -63,107 +80,48 @@ const SignUpForm = () => {
       gap={10}
       onSubmit={handleSubmit(
         useCallback((data) => {
-          createUser(
-            {
-              ...data,
-              login_type: 'GENERAL',
+          createUser(data, {
+            onSuccess: () => {
+              login(
+                {
+                  email: data.email,
+                  social_id: data.social_id,
+                  login_type: data.login_type,
+                },
+                {
+                  onSuccess: () => {
+                    router.push(toUrl(PagePaths.HOME))
+                  },
+                  onError: () => {
+                    router.push(toUrl(PagePaths.SignIn)).then(() => {
+                      toaster.create({
+                        type: 'error',
+                        title: '소셜 로그인 실패',
+                        description:
+                          '소셜 로그인 실패 로그인을 다시 시도해 주세요.',
+                      })
+                    })
+                  },
+                },
+              )
             },
-            {
-              onSuccess: () => {
-                router.push(PagePaths.HOME).then(() => {
-                  toaster.create({
-                    type: 'success',
-                    title: '회원가입 성공',
-                    description: '새로운 계정으로 로그인해주세요.',
-                  })
-                })
-              },
-              onError: (error) => {
-                const err = error as AxiosError
-                const errorResponse = err.response?.data as ApiErrorResponse
-                toaster.create({
-                  type: 'error',
-                  title: '회원가입 실패',
-                  description: errorResponse.error_message,
-                })
-              },
+            onError: (error) => {
+              const err = error as AxiosError
+              const errorResponse = err.response?.data as ApiErrorResponse
+              toaster.create({
+                type: 'error',
+                title: '회원가입 실패',
+                description: errorResponse.error_message,
+              })
             },
-          )
+          })
         }, []),
       )}
     >
       <Text fontSize={'3xl'} fontWeight={'bold'}>
-        회원가입
+        소셜 회원가입
       </Text>
-      <SocialLoginButtons />
       <Flex w={'100%'} direction={'column'} gap={6}>
-        <Flex direction={'column'} gap={2}>
-          <Text>아이디(이메일)</Text>
-          <Input
-            type={'text'}
-            placeholder={'아이디(이메일)'}
-            style={inputStyle}
-            {...register('email', {
-              required: '아이디(이메일)이 입력되지 않았습니다.',
-              pattern: {
-                value: /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                message: '이메일 형식이 올바르지 않습니다.',
-              },
-            })}
-          />
-          <ErrorMessage
-            name={'email'}
-            errors={errors}
-            render={({ message }) => <ErrorText message={message} />}
-          />
-        </Flex>
-        <Flex direction={'column'} gap={2}>
-          <Text>비밀번호</Text>
-          <Input
-            type={'password'}
-            placeholder={'비밀번호'}
-            style={inputStyle}
-            {...register('password', {
-              required: '비밀번호가 입력되지 않았습니다.',
-              pattern: {
-                value: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/,
-                message:
-                  '비밀번호 형식이 올바르지 않습니다.(특수 문자 포함 8자 이상)',
-              },
-            })}
-          />
-          <ErrorMessage
-            name={'password'}
-            errors={errors}
-            render={({ message }) => <ErrorText message={message} />}
-          />
-        </Flex>
-        <Flex direction={'column'} gap={2}>
-          <Text fontWeight={'bold'}>비밀번호 확인</Text>
-          <Input
-            type={'password'}
-            placeholder={'비밀번호 확인'}
-            style={inputStyle}
-            {...register('check_password', {
-              required: '확인용 비밀번호가 입력되지 않았습니다.',
-              pattern: {
-                value: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/,
-                message:
-                  '비밀번호 형식이 올바르지 않습니다.(특수 문자 포함 8자 이상)',
-              },
-              validate: (val?: string) => {
-                if (watch('password') != val) {
-                  return '비밀번호가 일치하지 않습니다.'
-                }
-              },
-            })}
-          />
-          <ErrorMessage
-            name={'check_password'}
-            errors={errors}
-            render={({ message }) => <ErrorText message={message} />}
-          />
-        </Flex>
         <Flex direction={'column'} gap={2}>
           <Text fontWeight={'bold'}>닉네임</Text>
           <Input
@@ -256,4 +214,4 @@ const SignUpForm = () => {
   )
 }
 
-export default SignUpForm
+export default SocialSignUpForm

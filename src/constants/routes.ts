@@ -8,7 +8,10 @@ export enum ApiV1Paths {
   LOGOUT = '/api/v1/auth/logout',
   REISSUE = '/api/v1/auth/reissue',
 
+  ME = '/api/v1/users/me',
+
   USERS = '/api/v1/users/:id?',
+  USER_CHANGE_PASSWORD = '/api/v1/users/change-password',
 }
 
 export enum PagePaths {
@@ -17,4 +20,5 @@ export enum PagePaths {
   // sign
   SignIn = '/sign/in',
   SignUp = '/sign/up',
+  SocialSignUp = '/sign/up/social',
 }

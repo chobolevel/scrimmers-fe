@@ -13,7 +13,6 @@ const inputStyle = {
   paddingLeft: '2px',
   paddingBottom: '6px',
   paddingTop: '6px',
-  color: 'white',
   border: 'none',
   borderBottom: '2px solid white',
   borderRadius: '0',
