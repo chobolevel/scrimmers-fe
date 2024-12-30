@@ -1,9 +1,11 @@
-import { Flex, Link } from '@chakra-ui/react'
+import { Flex, Text } from '@chakra-ui/react'
 import { PagePaths } from '@/constants'
+import { useRouter } from 'next/router'
 
 const GeneralLayoutHeader = () => {
+  const router = useRouter()
   return (
-    <Flex justify={'center'}>
+    <Flex justify={'center'} color={'white'} fontWeight={'bold'}>
       <Flex
         w={'100%'}
         maxW={'1000px'}
@@ -11,15 +13,33 @@ const GeneralLayoutHeader = () => {
         align={'center'}
         justify={'space-between'}
       >
-        <Flex>
-          <Link href={PagePaths.HOME} color={'white'} fontWeight={'bold'}>
+        <Flex align={'center'}>
+          <Text
+            cursor={'pointer'}
+            onClick={() => {
+              router.push(PagePaths.HOME)
+            }}
+          >
             SCRIMMERS
-          </Link>
+          </Text>
         </Flex>
-        <Flex>
-          <Link href={PagePaths.SignIn} color={'white'}>
+        <Flex align={'center'} gap={2}>
+          <Text
+            cursor={'pointer'}
+            onClick={() => {
+              router.push(PagePaths.SignIn)
+            }}
+          >
             로그인
-          </Link>
+          </Text>
+          <Text
+            cursor={'pointer'}
+            onClick={() => {
+              router.push(PagePaths.SignUp)
+            }}
+          >
+            회원가입
+          </Text>
         </Flex>
       </Flex>
     </Flex>
