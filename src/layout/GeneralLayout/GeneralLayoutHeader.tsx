@@ -12,7 +12,12 @@ const GeneralLayoutHeader = () => {
 
   const isAuthenticated = useMemo(() => !!me, [me])
   return (
-    <Flex justify={'center'} fontWeight={'bold'}>
+    <Flex
+      as={'header'}
+      justify={'center'}
+      fontWeight={'bold'}
+      bgColor={'blue.800'}
+    >
       <Flex
         w={'100%'}
         maxW={'1000px'}
@@ -36,11 +41,7 @@ const GeneralLayoutHeader = () => {
               <Text
                 cursor={'pointer'}
                 onClick={() => {
-                  logout(undefined, {
-                    onSuccess: () => {
-                      router.push(PagePaths.HOME)
-                    },
-                  })
+                  logout()
                 }}
               >
                 로그아웃

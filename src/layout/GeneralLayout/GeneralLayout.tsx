@@ -10,7 +10,11 @@ const GeneralLayout = ({ children }: GeneralLayoutProps) => {
   return (
     <Flex minH={'100vh'} direction={'column'} bgColor={'blue.950'}>
       <GeneralLayoutHeader />
-      {children}
+      <Flex direction={'column'} align={'center'}>
+        <Flex w={'100%'} maxW={1000} p={2}>
+          {children}
+        </Flex>
+      </Flex>
       <GeneralLayoutFooter />
     </Flex>
   )
