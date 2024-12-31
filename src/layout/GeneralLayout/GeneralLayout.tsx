@@ -11,7 +11,7 @@ const GeneralLayout = ({ children }: GeneralLayoutProps) => {
     <Flex minH={'100vh'} direction={'column'} bgColor={'blue.950'}>
       <GeneralLayoutHeader />
       <Flex direction={'column'} align={'center'}>
-        <Flex w={'100%'} maxW={1000} p={2}>
+        <Flex w={'100%'} maxW={1000} py={4} direction={'column'}>
           {children}
         </Flex>
       </Flex>
