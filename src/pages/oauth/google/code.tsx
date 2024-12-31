@@ -60,7 +60,7 @@ const GoogleCodePage = () => {
         <link rel="icon" href="/vercel.svg" />
       </Head>
       <UnAuthenticatedLayout>
-        <Flex w={'100%'} h={1000} justify={'center'} align={'center'}>
+        <Flex w={'100%'} h={'100%'} justify={'center'} align={'center'}>
           <Spinner size={'lg'} />
         </Flex>
       </UnAuthenticatedLayout>
