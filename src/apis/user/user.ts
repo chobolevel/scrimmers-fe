@@ -24,7 +24,6 @@ export type UserRoleType = 'ROLE_USER' | 'ROLE_ADMIN'
 export type UserOrderType = 'CREATED_AT_ASC' | 'CREATED_AT_DESC'
 export type UserUpdateMask =
   | 'NICKNAME'
-  | 'PHONE'
   | 'BIRTH'
   | 'GENDER'
   | 'MAIN_POSITION'
@@ -34,7 +33,6 @@ export interface User extends Schema {
   email: string
   login_type: UserLoginType
   nickname: string
-  phone: string
   age: number
   birth: string
   gender: UserGenderType
@@ -48,7 +46,6 @@ export interface UserDetail extends Schema {
   email: string
   login_type: UserLoginType
   nickname: string
-  phone: string
   age: number
   birth: string
   gender: UserGenderType
@@ -66,7 +63,6 @@ export interface CreateUserRequest {
   social_id?: string
   login_type: UserLoginType
   nickname: string
-  phone: string
   birth: string
   gender: UserGenderType
 }
@@ -82,7 +78,6 @@ export interface GetUsersParams extends ApiPagingRequest {
 export interface UpdateUserRequest {
   id: ID
   nickname?: string
-  phone?: string
   birth?: string
   gender?: UserGenderType
   main_position?: UserPositionType

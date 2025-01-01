@@ -186,26 +186,6 @@ const SignUpForm = () => {
           />
         </Flex>
         <Flex direction={'column'} gap={2}>
-          <Text fontWeight={'bold'}>전화번호</Text>
-          <Input
-            type={'text'}
-            placeholder={'전화번호(하이픈 제외)'}
-            style={inputStyle}
-            {...register('phone', {
-              required: '전화번호가 입력되지 않았습니다.',
-              pattern: {
-                value: /^01(0|1|[6-9])[0-9]{3,4}[0-9]{4}$/,
-                message: '휴대폰 번호 형식이 올바르지 않습니다.',
-              },
-            })}
-          />
-          <ErrorMessage
-            name={'phone'}
-            errors={errors}
-            render={({ message }) => <ErrorText message={message} />}
-          />
-        </Flex>
-        <Flex direction={'column'} gap={2}>
           <Text fontWeight={'bold'}>생년월일</Text>
           <Input
             type={'date'}
