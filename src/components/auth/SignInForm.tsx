@@ -1,4 +1,4 @@
-import { Button, Flex, Input, Link, Text } from '@chakra-ui/react'
+import { Button, Flex, Input, Text } from '@chakra-ui/react'
 import { ErrorText, SocialLoginButtons } from '@/components'
 import { useForm } from 'react-hook-form'
 import { ApiErrorResponse, LoginRequest, useLogin } from '@/apis'
@@ -13,7 +13,6 @@ const inputStyle = {
   paddingLeft: '2px',
   paddingBottom: '6px',
   paddingTop: '6px',
-  color: 'white',
   border: 'none',
   borderBottom: '2px solid white',
   borderRadius: '0',
@@ -66,18 +65,23 @@ const SignInForm = () => {
         }, []),
       )}
     >
-      <Text fontSize={'3xl'} fontWeight={'bold'}>
+      <Text fontSize={'2xl'} fontWeight={'bold'}>
         로그인
       </Text>
       <SocialLoginButtons />
       <Flex direction={'column'} gap={6} w={'100%'}>
         <Flex direction={'column'} gap={2}>
+          <Text fontWeight={'bold'}>아이디(이메일)</Text>
           <Input
             type={'text'}
             placeholder={'아이디(이메일)'}
             style={inputStyle}
             {...register('email', {
               required: '아이디가 입력되지 않았습니다.',
+              pattern: {
+                value: /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                message: '이메일 형식이 올바르지 않습니다.',
+              },
             })}
           />
           <ErrorMessage
@@ -87,6 +91,7 @@ const SignInForm = () => {
           />
         </Flex>
         <Flex direction={'column'} gap={2}>
+          <Text fontWeight={'bold'}>비밀번호</Text>
           <Input
             type={'password'}
             placeholder={'비밀번호'}
@@ -108,10 +113,22 @@ const SignInForm = () => {
         </Button>
       </Flex>
       <Flex w={'100%'} align={'center'} justify={'space-between'}>
-        <Link color={'white'}>비밀번호 찾기</Link>
-        <Link color={'white'} href={PagePaths.SignUp}>
+        <Text
+          cursor={'pointer'}
+          onClick={() => {
+            router.push(PagePaths.HOME)
+          }}
+        >
+          비밀번호 찾기
+        </Text>
+        <Text
+          cursor={'pointer'}
+          onClick={() => {
+            router.push(PagePaths.SignUp)
+          }}
+        >
           회원가입
-        </Link>
+        </Text>
       </Flex>
     </Flex>
   )

@@ -1,7 +1,7 @@
-import { Flex, Text } from '@chakra-ui/react'
 import { useMemo } from 'react'
+import { Flex, Text } from '@chakra-ui/react'
 
-const GeneralLayoutFooter = () => {
+const MobileLayoutFooter = () => {
   const year = useMemo(() => new Date().getFullYear(), [])
   return (
     <Flex as={'footer'} justify={'center'}>
@@ -20,4 +20,4 @@ const GeneralLayoutFooter = () => {
   )
 }
 
-export default GeneralLayoutFooter
+export default MobileLayoutFooter

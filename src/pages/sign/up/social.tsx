@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import { UnAuthenticatedLayout } from '@/layout'
-import { SignUpForm } from '@/components'
+import { Logo, SocialSignUpForm } from '@/components'
 
-const SignUpPage = () => {
+const SocialSignUpPage = () => {
   return (
     <>
       <Head>
@@ -15,10 +15,11 @@ const SignUpPage = () => {
         <link rel="icon" href="/vercel.svg" />
       </Head>
       <UnAuthenticatedLayout>
-        <SignUpForm />
+        <Logo />
+        <SocialSignUpForm />
       </UnAuthenticatedLayout>
     </>
   )
 }
 
-export default SignUpPage
+export default SocialSignUpPage

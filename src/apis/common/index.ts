@@ -1,3 +1,5 @@
+import { useQueryClient } from '@tanstack/react-query'
+
 export type ID = string
 
 export interface ApiResponse<T> {
@@ -20,4 +22,18 @@ export interface Schema {
   id: ID
   created_at: number
   updated_at: number
+}
+
+export interface ApiPagingRequest {
+  skipCount: number
+  limitCount: number
+}
+
+export const useInvalidate = (url: string, params?: object) => {
+  const queryClient = useQueryClient()
+  const queryKeyToInvalidate = params ? [url, params] : [url]
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: queryKeyToInvalidate })
+  }
 }

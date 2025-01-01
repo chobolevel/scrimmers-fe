@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import { UnAuthenticatedLayout } from '@/layout'
-import { Logo, SignInForm } from '@/components'
+import { Logo, SignUpForm } from '@/components'
 
-const SignInPage = () => {
+const SignUpPage = () => {
   return (
     <>
       <Head>
@@ -16,10 +16,10 @@ const SignInPage = () => {
       </Head>
       <UnAuthenticatedLayout>
         <Logo />
-        <SignInForm />
+        <SignUpForm />
       </UnAuthenticatedLayout>
     </>
   )
 }
 
-export default SignInPage
+export default SignUpPage

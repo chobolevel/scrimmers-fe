@@ -3,6 +3,10 @@ export {
   GeneralLayoutFooter,
   GeneralLayoutHeader,
 } from './GeneralLayout'
-export { MobileLayout } from './MobileLayout'
+export {
+  MobileLayout,
+  MobileLayoutFooter,
+  MobileLayoutHeader,
+} from './MobileLayout'
 export { ResponsiveLayout } from './ResponsiveLayout'
 export { UnAuthenticatedLayout } from './UnAuthenticatedLayout'

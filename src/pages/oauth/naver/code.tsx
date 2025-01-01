@@ -1,43 +1,41 @@
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
-import {
-  KakaoTokenApi,
-  KakaoTokenRequest,
-  KakaoTokenResponse,
-  KakaoUserApi,
-  KakaoUserResponse,
-  LoginRequest,
-  useLogin,
-} from '@/apis'
 import Head from 'next/head'
 import { UnAuthenticatedLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import {
+  LoginRequest,
+  NaverTokenResponse,
+  NaverUserResponse,
+  useLogin,
+} from '@/apis'
+import { useEffect } from 'react'
 import { PagePaths } from '@/constants'
 import { toaster } from '@/components/ui/toaster'
+import axios from 'axios'
 import { encodeToBase64 } from 'next/dist/build/webpack/loaders/utils'
 
-const KakaoCodePage = () => {
+const NaverCodePage = () => {
   const router = useRouter()
   const { mutate: login } = useLogin()
 
   useEffect(() => {
     if (router.query.code) {
-      KakaoTokenApi.instance
-        .post<KakaoTokenResponse>('/oauth/token', {
-          grant_type: 'authorization_code',
-          client_id: process.env.NEXT_PUBLIC_KAKAO_API_KEY,
-          redirect_uri: process.env.NEXT_PUBLIC_KAKAO_REDIRECT_URI,
-          code: router.query.code,
-        } as KakaoTokenRequest)
+      axios
+        .post<NaverTokenResponse>(
+          `/naver-token/oauth2.0/token?grant_type=authorization_code&client_id=${process.env.NEXT_PUBLIC_NAVER_API_CLIENT_ID}&client_secret=${process.env.NEXT_PUBLIC_NAVER_API_CLIENT_SECRET}&code=${router.query.code}&state=${process.env.NEXT_PUBLIC_NAVER_API_STATE}`,
+        )
         .then((res) => {
-          KakaoUserApi.instance.defaults.headers.common.Authorization = `Bearer ${res.data.access_token}`
-          KakaoUserApi.instance
-            .get<KakaoUserResponse>('/v2/user/me')
+          axios
+            .get<NaverUserResponse>(`/naver-me/v1/nid/me`, {
+              headers: {
+                Authorization: `${res.data.token_type} ${res.data.access_token}`,
+              },
+            })
             .then((res) => {
               const loginRequest = {
-                email: res.data.kakao_account.email,
-                social_id: res.data.id,
-                login_type: 'KAKAO',
+                email: res.data.response.email,
+                social_id: res.data.response.id,
+                login_type: 'NAVER',
               } as LoginRequest
               login(loginRequest, {
                 onSuccess: () => {
@@ -57,9 +55,9 @@ const KakaoCodePage = () => {
               router.push(PagePaths.HOME).then(() => {
                 toaster.create({
                   type: 'error',
-                  title: '카카오 로그인 실패',
+                  title: '네이버 로그인 실패',
                   description:
-                    '카카오 로그인에 실패하였습니다. 다시 시도해 주세요.',
+                    '네이버 로그인에 실패하였습니다. 다시 시도해 주세요.',
                 })
               })
             })
@@ -68,9 +66,9 @@ const KakaoCodePage = () => {
           router.push(PagePaths.HOME).then(() => {
             toaster.create({
               type: 'error',
-              title: '카카오 로그인 실패',
+              title: '네이버 로그인 실패',
               description:
-                '카카오 로그인에 실패하였습니다. 다시 시도해 주세요.',
+                '네이버 로그인에 실패하였습니다. 다시 시도해 주세요.',
             })
           })
         })
@@ -79,7 +77,7 @@ const KakaoCodePage = () => {
   return (
     <>
       <Head>
-        <title>{'카카오 로그인 - 스크리머즈'}</title>
+        <title>{'네이버 로그인 - 스크리머즈'}</title>
 
         {/*view port*/}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -96,4 +94,4 @@ const KakaoCodePage = () => {
   )
 }
 
-export default KakaoCodePage
+export default NaverCodePage
