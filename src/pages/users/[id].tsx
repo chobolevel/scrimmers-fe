@@ -1,10 +1,11 @@
 import Head from 'next/head'
 import { ResponsiveLayout } from '@/layout'
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next'
-import { Api, ApiResponse, UserDetail } from '@/apis'
+import { Api, ApiResponse, UserDetail, UserPositionTypeObj } from '@/apis'
 import { Nullable } from '@zag-js/utils'
 import { ApiV1Paths, toUrl } from '@/constants'
 import { Flex, Text } from '@chakra-ui/react'
+import { Avatar } from '@/components/ui/avatar'
 
 const UserProfilePage = ({
   user,
@@ -23,7 +24,21 @@ const UserProfilePage = ({
       </Head>
       <ResponsiveLayout>
         {user ? (
-          <Flex direction={'column'}>{user.nickname}</Flex>
+          <Flex direction={'column'} align={'center'} py={100}>
+            <Flex gap={10} align={'center'}>
+              <Flex>
+                <Avatar size={'2xl'} src={user.profile_image?.url} />
+              </Flex>
+              <Flex direction={'column'} gap={2}>
+                <Text
+                  fontSize={'lg'}
+                  fontWeight={'bold'}
+                >{`${user.nickname}(${user.age}세)`}</Text>
+                <Text>{`주 포지션 ${UserPositionTypeObj[user.main_position].label}`}</Text>
+                <Text>{`보조 포지션 ${UserPositionTypeObj[user.sub_position].label}`}</Text>
+              </Flex>
+            </Flex>
+          </Flex>
         ) : (
           <Flex
             direction={'column'}

@@ -29,6 +29,27 @@ export type UserUpdateMask =
   | 'MAIN_POSITION'
   | 'SUB_POSITION'
 
+export const UserPositionTypeObj = {
+  NONE: {
+    label: '미선택',
+  },
+  TOP: {
+    label: '탑',
+  },
+  JUNGLE: {
+    label: '정글',
+  },
+  MID: {
+    label: '미드',
+  },
+  BOTTOM: {
+    label: '원딜',
+  },
+  SUPPORT: {
+    label: '서폿',
+  },
+}
+
 export interface User extends Schema {
   email: string
   login_type: UserLoginType
