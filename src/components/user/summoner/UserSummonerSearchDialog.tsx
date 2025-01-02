@@ -7,16 +7,27 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import React, { useState } from 'react'
-import { Button, Flex, Input } from '@chakra-ui/react'
+import {
+  Badge,
+  Button,
+  Flex,
+  Image,
+  Input,
+  Spinner,
+  Text,
+} from '@chakra-ui/react'
 import axios from 'axios'
 import {
   RiotAccountResponse,
   RiotSummonerRankResponse,
   RiotSummonerResponse,
+  useCreateUserSummoner,
   UserSummonerRanKType,
+  UserSummonerRankTypeObj,
 } from '@/apis'
+import { toaster } from '@/components/ui/toaster'
 
-export interface Summoner {
+interface Summoner {
   summoner_id: string
   summoner_name: string
   summoner_tag: string
@@ -27,11 +38,15 @@ export interface Summoner {
 }
 
 const UserSummonerSearchDialog = () => {
+  const [loading, setLoading] = useState<boolean>(false)
   const [summonerName, setSummonerName] = useState<string>('')
   const [summonerTag, setSummonerTag] = useState<string>('')
   const [summoner, setSummoner] = useState<Summoner>()
 
+  const { mutate: createUserSummoner } = useCreateUserSummoner()
+
   const handleSearch = () => {
+    setLoading(true)
     axios
       .get<RiotAccountResponse>(
         `/riot-account/riot/account/v1/accounts/by-riot-id/${summonerName}/${summonerTag}?api_key=${process.env.NEXT_PUBLIC_RIOT_API_KEY}`,
@@ -68,17 +83,36 @@ const UserSummonerSearchDialog = () => {
                   summoner_flex_rank:
                     (flexRank?.tier as UserSummonerRanKType) ?? 'NONE',
                 })
+                setLoading(false)
               })
               .catch(() => {
-                console.log('summoner rank search fail')
+                setLoading(false)
+                toaster.create({
+                  type: 'error',
+                  title: '소환사 정보 조회 실패',
+                  description:
+                    '라이엇 서버로부터 정보를 받아올 수 없습니다. 나중에 다시 시도해 주세요.',
+                })
               })
           })
           .catch(() => {
-            console.log('summoner search fail')
+            setLoading(false)
+            toaster.create({
+              type: 'error',
+              title: '소환사 정보 조회 실패',
+              description:
+                '라이엇 서버로부터 정보를 받아올 수 없습니다. 나중에 다시 시도해 주세요.',
+            })
           })
       })
       .catch(() => {
-        console.log('account search fail')
+        setLoading(false)
+        toaster.create({
+          type: 'error',
+          title: '소환사 정보 조회 실패',
+          description:
+            '라이엇 서버로부터 정보를 받아올 수 없습니다. 나중에 다시 시도해 주세요.',
+        })
       })
   }
   return (
@@ -128,6 +162,100 @@ const UserSummonerSearchDialog = () => {
               검색
             </Button>
           </Flex>
+          {summoner ? (
+            <Flex
+              gap={6}
+              p={4}
+              border={'2px solid'}
+              borderRadius={10}
+              align={'center'}
+              position={'relative'}
+            >
+              <Flex w={100} h={100} overflow={'hidden'} position={'relative'}>
+                <Image
+                  w={'100%'}
+                  h={'100%'}
+                  src={`${process.env.NEXT_PUBLIC_RIOT_PROFILE_ICON_URL}/${summoner.summoner_icon_id}.png`}
+                  alt={`${summoner.summoner_name}#${summoner.summoner_tag}님의 소환사 아이콘`}
+                  borderRadius={10}
+                />
+                <Badge position={'absolute'} bottom={0} right={0}>
+                  {summoner.summoner_level}
+                </Badge>
+              </Flex>
+              <Flex direction={'column'} gap={1}>
+                <Text fontSize={'lg'} fontWeight={'bold'}>
+                  {`${summoner.summoner_name}#${summoner.summoner_tag}`}
+                </Text>
+                <Flex align={'center'}>
+                  <Text fontWeight={'bold'}>솔로랭크</Text>
+                  <Image
+                    w={'40px'}
+                    h={'40px'}
+                    src={
+                      UserSummonerRankTypeObj[summoner.summoner_solo_rank].icon
+                    }
+                    alt={
+                      UserSummonerRankTypeObj[summoner.summoner_solo_rank].label
+                    }
+                  />
+                </Flex>
+                <Flex align={'center'}>
+                  <Text fontWeight={'bold'}>자유랭크</Text>
+                  <Image
+                    w={'40px'}
+                    h={'40px'}
+                    src={
+                      UserSummonerRankTypeObj[summoner.summoner_flex_rank].icon
+                    }
+                    alt={
+                      UserSummonerRankTypeObj[summoner.summoner_flex_rank].label
+                    }
+                  />
+                </Flex>
+              </Flex>
+              <Button
+                position={'absolute'}
+                bottom={2}
+                right={2}
+                size={'sm'}
+                fontWeight={'bold'}
+                colorPalette={'green'}
+                onClick={() => {
+                  if (!summoner) return
+                  createUserSummoner(
+                    {
+                      summoner_id: summoner.summoner_id,
+                      summoner_name: summoner.summoner_name,
+                      summoner_tag: summoner.summoner_tag,
+                      summoner_level: summoner.summoner_level,
+                      summoner_icon_id: summoner.summoner_icon_id,
+                      summoner_solo_rank: summoner.summoner_solo_rank,
+                      summoner_flex_rank: summoner.summoner_flex_rank,
+                    },
+                    {
+                      onSuccess: () => {
+                        toaster.create({
+                          type: 'success',
+                          title: '소환사 정보 연결 완료',
+                        })
+                      },
+                    },
+                  )
+                }}
+              >
+                연결
+              </Button>
+            </Flex>
+          ) : (
+            <Flex h={100} justify={'center'} align={'center'}>
+              {loading ? (
+                <Spinner size={'lg'} />
+              ) : (
+                <Text>소환사 정보를 연결해보세요!</Text>
+              )}
+            </Flex>
+          )}
         </Flex>
       </DialogBody>
       <DialogFooter />
