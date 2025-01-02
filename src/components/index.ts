@@ -4,4 +4,5 @@ export {
   SocialLoginButtons,
   SocialSignUpForm,
 } from './auth'
-export { ErrorText, Logo } from './common'
+export { ImageUploader, ErrorText, Logo } from './common'
+export { UserProfile } from './user'

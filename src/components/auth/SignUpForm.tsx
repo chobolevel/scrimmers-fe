@@ -15,10 +15,9 @@ import {
 } from '@/components/ui/select'
 import { CSSProperties, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { ApiErrorResponse, CreateUserRequest, useCreateUser } from '@/apis'
+import { CreateUserRequest, useCreateUser } from '@/apis'
 import { ErrorMessage } from '@hookform/error-message'
 import { ErrorText, SocialLoginButtons } from '@/components'
-import { AxiosError } from 'axios'
 import { toaster } from '@/components/ui/toaster'
 import { useRouter } from 'next/router'
 import { PagePaths } from '@/constants'
@@ -76,15 +75,6 @@ const SignUpForm = () => {
                     title: '회원가입 성공',
                     description: '새로운 계정으로 로그인해주세요.',
                   })
-                })
-              },
-              onError: (error) => {
-                const err = error as AxiosError
-                const errorResponse = err.response?.data as ApiErrorResponse
-                toaster.create({
-                  type: 'error',
-                  title: '회원가입 실패',
-                  description: errorResponse.error_message,
                 })
               },
             },

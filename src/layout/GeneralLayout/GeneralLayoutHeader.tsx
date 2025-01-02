@@ -21,7 +21,7 @@ const GeneralLayoutHeader = () => {
       <Flex
         w={'100%'}
         maxW={'1000px'}
-        p={2}
+        py={2}
         align={'center'}
         justify={'space-between'}
       >

@@ -5,11 +5,12 @@ import {
   ApiResponse,
   ID,
   Schema,
+  Team,
   UserImage,
   UserSummoner,
 } from '@/apis'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ApiV1Paths, toUrl } from '@/constants'
+import { ApiV1Paths, images, toUrl } from '@/constants'
 
 export type UserLoginType = 'GENERAL' | 'KAKAO' | 'NAVER' | 'GOOGLE'
 export type UserGenderType = 'MALE' | 'FEMALE'
@@ -32,21 +33,38 @@ export type UserUpdateMask =
 export const UserPositionTypeObj = {
   NONE: {
     label: '미선택',
+    icon: images.none_position.src,
   },
   TOP: {
     label: '탑',
+    icon: images.top.src,
   },
   JUNGLE: {
     label: '정글',
+    icon: images.jungle.src,
   },
   MID: {
     label: '미드',
+    icon: images.mid.src,
   },
   BOTTOM: {
     label: '원딜',
+    icon: images.bottom.src,
   },
   SUPPORT: {
     label: '서폿',
+    icon: images.support.src,
+  },
+}
+
+export const UserGenderTypeObj = {
+  MALE: {
+    label: '남성',
+    color: 'blue',
+  },
+  FEMALE: {
+    label: '여성',
+    color: 'pink',
   },
 }
 
@@ -54,8 +72,7 @@ export interface User extends Schema {
   email: string
   login_type: UserLoginType
   nickname: string
-  age: number
-  birth: string
+  age_range: number
   gender: UserGenderType
   main_position: UserPositionType
   sub_position: UserPositionType
@@ -64,11 +81,11 @@ export interface User extends Schema {
 }
 
 export interface UserDetail extends Schema {
+  team: Team
   email: string
   login_type: UserLoginType
   nickname: string
-  age: number
-  birth: string
+  age_range: number
   gender: UserGenderType
   main_position: UserPositionType
   sub_position: UserPositionType

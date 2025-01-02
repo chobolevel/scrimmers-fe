@@ -9,14 +9,12 @@ import { useRouter } from 'next/router'
 import { CSSProperties, useCallback, useEffect } from 'react'
 import { decodeFromBase64 } from 'next/dist/build/webpack/loaders/utils'
 import {
-  ApiErrorResponse,
   CreateUserRequest,
   LoginRequest,
   useCreateUser,
   useLogin,
 } from '@/apis'
 import { toaster } from '@/components/ui/toaster'
-import { AxiosError } from 'axios'
 import { ErrorText } from '@/components'
 import { ErrorMessage } from '@hookform/error-message'
 import {
@@ -104,15 +102,6 @@ const SocialSignUpForm = () => {
                   },
                 },
               )
-            },
-            onError: (error) => {
-              const err = error as AxiosError
-              const errorResponse = err.response?.data as ApiErrorResponse
-              toaster.create({
-                type: 'error',
-                title: '회원가입 실패',
-                description: errorResponse.error_message,
-              })
             },
           })
         }, []),

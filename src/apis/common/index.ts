@@ -18,6 +18,10 @@ export interface ApiErrorResponse {
   error_message: string
 }
 
+export enum ApiErrorCode {
+  UNAUTHORIZED = 'UNAUTHORIZED',
+}
+
 export interface Schema {
   id: ID
   created_at: number
