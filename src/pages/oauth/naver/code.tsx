@@ -3,20 +3,20 @@ import { UnAuthenticatedLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import {
+  Api,
+  ApiResponse,
   LoginRequest,
   NaverTokenResponse,
   NaverUserResponse,
-  useLogin,
 } from '@/apis'
 import { useEffect } from 'react'
-import { PagePaths } from '@/constants'
+import { ApiV1Paths, PagePaths } from '@/constants'
 import { toaster } from '@/components/ui/toaster'
 import axios from 'axios'
 import { encodeToBase64 } from 'next/dist/build/webpack/loaders/utils'
 
 const NaverCodePage = () => {
   const router = useRouter()
-  const { mutate: login } = useLogin()
 
   useEffect(() => {
     if (router.query.code) {
@@ -37,19 +37,19 @@ const NaverCodePage = () => {
                 social_id: res.data.response.id,
                 login_type: 'NAVER',
               } as LoginRequest
-              login(loginRequest, {
-                onSuccess: () => {
+              Api.instance
+                .post<ApiResponse<boolean>>(ApiV1Paths.LOGIN, loginRequest)
+                .then(() => {
                   router.push(PagePaths.HOME)
-                },
-                onError: () => {
+                })
+                .catch(() => {
                   router.push({
                     pathname: PagePaths.SocialSignUp,
                     query: {
                       base: encodeToBase64(loginRequest),
                     },
                   })
-                },
-              })
+                })
             })
             .catch(() => {
               router.push(PagePaths.HOME).then(() => {
