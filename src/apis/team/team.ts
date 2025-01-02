@@ -8,5 +8,5 @@ export interface Team extends Schema {
   description: string
   head_count: number
   max_head_count: number
-  logo: TeamImage
+  logo?: TeamImage
 }

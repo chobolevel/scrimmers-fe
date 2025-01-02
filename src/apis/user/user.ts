@@ -97,7 +97,7 @@ export interface User extends Schema {
 }
 
 export interface UserDetail extends Schema {
-  team: Team
+  team?: Team
   email: string
   login_type: UserLoginType
   nickname: string

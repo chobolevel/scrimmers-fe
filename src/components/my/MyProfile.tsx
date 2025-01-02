@@ -65,7 +65,7 @@ const MyProfile = ({ user }: MyProfileProps) => {
   const { mutate: deleteUserImage } = useDeleteUserImage()
   const { mutate: updateUser } = useUpdateUser()
 
-  const team = useMemo(() => user.team, [user])
+  const team = useMemo(() => user?.team ?? null, [user])
   const profileImage = useMemo(
     () => (user?.profile_image ? user.profile_image : null),
     [user],
@@ -387,49 +387,55 @@ const MyProfile = ({ user }: MyProfileProps) => {
         <Text fontSize={'lg'} fontWeight={'bold'}>
           팀 정보
         </Text>
-        <Flex align={'center'} gap={10}>
-          <Flex direction={'column'} gap={2} align={'center'}>
-            {team.logo ? (
-              <Image
-                w={100}
-                h={100}
-                src={team.logo.url}
-                alt={`${team.name} 로고 이미지`}
-                objectFit={'contain'}
-              />
-            ) : (
-              <RiTeamFill size={100} />
-            )}
-            <Flex>
-              <Badge size={'lg'} fontWeight={'bold'}>
-                {team.name}
-              </Badge>
+        {team ? (
+          <Flex align={'center'} gap={10}>
+            <Flex direction={'column'} gap={2} align={'center'}>
+              {team?.logo ? (
+                <Image
+                  w={100}
+                  h={100}
+                  src={team.logo.url}
+                  alt={`${team.name} 로고 이미지`}
+                  objectFit={'contain'}
+                />
+              ) : (
+                <RiTeamFill size={100} />
+              )}
+              <Flex>
+                <Badge size={'lg'} fontWeight={'bold'}>
+                  {team.name}
+                </Badge>
+              </Flex>
+            </Flex>
+            <Flex direction={'column'} gap={2}>
+              <Flex align={'center'} gap={2}>
+                <FaCrown size={20} />
+                <Text
+                  cursor={'pointer'}
+                  _hover={{
+                    textDecoration: 'underline',
+                  }}
+                  onClick={() => {
+                    router.push(
+                      toUrl(PagePaths.UserProfile, { id: team.owner_id }),
+                    )
+                  }}
+                >
+                  {team.owner_nickname}
+                </Text>
+              </Flex>
+              <Flex align={'center'} gap={2}>
+                <MdSupervisorAccount size={20} />
+                <Text>{`${team.head_count}/${team.max_head_count}`}</Text>
+              </Flex>
+              <Text>{team.description}</Text>
             </Flex>
           </Flex>
-          <Flex direction={'column'} gap={2}>
-            <Flex align={'center'} gap={2}>
-              <FaCrown size={20} />
-              <Text
-                cursor={'pointer'}
-                _hover={{
-                  textDecoration: 'underline',
-                }}
-                onClick={() => {
-                  router.push(
-                    toUrl(PagePaths.UserProfile, { id: team.owner_id }),
-                  )
-                }}
-              >
-                {team.owner_nickname}
-              </Text>
-            </Flex>
-            <Flex align={'center'} gap={2}>
-              <MdSupervisorAccount size={20} />
-              <Text>{`${team.head_count}/${team.max_head_count}`}</Text>
-            </Flex>
-            <Text>{team.description}</Text>
+        ) : (
+          <Flex h={100} align={'center'} justify={'center'}>
+            <Text>현재 소속팀이 없습니다. 새로운 소속팀을 찾아보세요!</Text>
           </Flex>
-        </Flex>
+        )}
       </Flex>
       <Separator />
       <Flex direction={'column'} gap={4}>
