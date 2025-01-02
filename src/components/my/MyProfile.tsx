@@ -479,7 +479,7 @@ const MyProfile = ({ user }: MyProfileProps) => {
                       <Image
                         w={'100%'}
                         h={'100%'}
-                        src={summoner.summoner_icon_url}
+                        src={`${process.env.NEXT_PUBLIC_RIOT_PROFILE_ICON_URL}/${summoner.summoner_icon_id}.png`}
                         alt={`${summoner.summoner_full_name}님의 소환사 아이콘`}
                         borderRadius={10}
                       />
