@@ -26,4 +26,10 @@ export enum PagePaths {
   SignIn = '/sign/in',
   SignUp = '/sign/up',
   SocialSignUp = '/sign/up/social',
+
+  // my
+  MyProfile = '/my/profile',
+
+  // user
+  UserProfile = '/users/:id?',
 }

@@ -5,4 +5,5 @@ export {
   SocialSignUpForm,
 } from './auth'
 export { ImageUploader, ErrorText, Logo } from './common'
-export { UserProfile } from './user'
+export { MyProfile } from './my'
+export { UserProfile, UserSummonerSearchDialog } from './user'

@@ -19,7 +19,7 @@ export type UserSummonerUpdateMask =
   | 'SUMMONER_NAME'
   | 'SUMMONER_TAG'
   | 'SUMMONER_LEVEL'
-  | 'SUMMONER_ICON_URL'
+  | 'SUMMONER_ICON_ID'
   | 'SUMMONER_SOLO_RANK'
   | 'SUMMONER_FLEX_RANK'
 
@@ -76,7 +76,7 @@ export interface UserSummoner extends Schema {
   summoner_tag: string
   summoner_full_name: string
   summoner_level: number
-  summoner_icon_url: string
+  summoner_icon_id: number
   is_un_ranked: boolean
   summoner_solo_rank: UserSummonerRanKType
   summoner_flex_rank: UserSummonerRanKType
@@ -87,7 +87,7 @@ export interface CreateUserSummonerRequest {
   summoner_name: string
   summoner_tag: string
   summoner_level: number
-  summoner_icon_url: string
+  summoner_icon_id: number
   summoner_solo_rank: UserSummonerRanKType
   summoner_flex_rank: UserSummonerRanKType
 }
@@ -97,7 +97,7 @@ export interface UpdateUserSummonerRequest {
   summoner_name?: string
   summoner_tag?: string
   summoner_level?: number
-  summoner_icon_url?: string
+  summoner_icon_id?: number
   summoner_solo_rank?: UserSummonerRanKType
   summoner_flex_rank?: UserSummonerRanKType
   update_mask: UserSummonerUpdateMask[]

@@ -41,6 +41,14 @@ const GeneralLayoutHeader = () => {
               <Text
                 cursor={'pointer'}
                 onClick={() => {
+                  router.push(PagePaths.MyProfile)
+                }}
+              >
+                내 정보
+              </Text>
+              <Text
+                cursor={'pointer'}
+                onClick={() => {
                   logout()
                 }}
               >

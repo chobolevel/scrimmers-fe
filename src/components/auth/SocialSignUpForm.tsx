@@ -13,6 +13,7 @@ import {
   LoginRequest,
   useCreateUser,
   useLogin,
+  UserGenderTypeArr,
 } from '@/apis'
 import { toaster } from '@/components/ui/toaster'
 import { ErrorText } from '@/components'
@@ -40,10 +41,7 @@ const inputStyle = {
 } as CSSProperties
 
 const genders = createListCollection({
-  items: [
-    { label: '남성', value: 'MALE' },
-    { label: '여성', value: 'FEMALE' },
-  ],
+  items: UserGenderTypeArr,
 })
 
 const SocialSignUpForm = () => {

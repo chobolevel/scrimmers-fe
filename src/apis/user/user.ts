@@ -6,6 +6,7 @@ import {
   ID,
   Schema,
   Team,
+  useInvalidate,
   UserImage,
   UserSummoner,
 } from '@/apis'
@@ -29,6 +30,11 @@ export type UserUpdateMask =
   | 'GENDER'
   | 'MAIN_POSITION'
   | 'SUB_POSITION'
+
+export const UserGenderTypeArr = [
+  { label: '남성', value: 'MALE' },
+  { label: '여성', value: 'FEMALE' },
+]
 
 export const UserPositionTypeObj = {
   NONE: {
@@ -68,11 +74,21 @@ export const UserGenderTypeObj = {
   },
 }
 
+export const UserPositionTypeArr = [
+  { label: '상관없음', value: 'NONE' },
+  { label: '탑', value: 'TOP' },
+  { label: '정글', value: 'JUNGLE' },
+  { label: '미드', value: 'MID' },
+  { label: '원딜', value: 'BOTTOM' },
+  { label: '서폿', value: 'SUPPORT' },
+]
+
 export interface User extends Schema {
   email: string
   login_type: UserLoginType
   nickname: string
   age_range: number
+  birth: string
   gender: UserGenderType
   main_position: UserPositionType
   sub_position: UserPositionType
@@ -86,6 +102,7 @@ export interface UserDetail extends Schema {
   login_type: UserLoginType
   nickname: string
   age_range: number
+  birth: string
   gender: UserGenderType
   main_position: UserPositionType
   sub_position: UserPositionType
@@ -138,6 +155,7 @@ export const useCreateUser = () => {
       Api.instance
         .post(toUrl(ApiV1Paths.USERS), request)
         .then((res) => res.data.data),
+    onSettled: useInvalidate(toUrl(ApiV1Paths.USERS)),
   })
 }
 
