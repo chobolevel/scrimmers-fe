@@ -1,12 +1,10 @@
 import { Button, Flex, Input, Text } from '@chakra-ui/react'
 import { ErrorText, SocialLoginButtons } from '@/components'
 import { useForm } from 'react-hook-form'
-import { ApiErrorResponse, LoginRequest, useLogin } from '@/apis'
+import { LoginRequest, useLogin } from '@/apis'
 import { CSSProperties, useCallback } from 'react'
 import { ErrorMessage } from '@hookform/error-message'
 import { useRouter } from 'next/router'
-import { AxiosError } from 'axios'
-import { toaster } from '@/components/ui/toaster'
 import { PagePaths } from '@/constants'
 
 const inputStyle = {
@@ -50,15 +48,6 @@ const SignInForm = () => {
             {
               onSuccess: () => {
                 router.push(PagePaths.HOME)
-              },
-              onError: (error) => {
-                const err = error as AxiosError
-                const errorResponse = err.response?.data as ApiErrorResponse
-                toaster.create({
-                  type: 'error',
-                  title: '로그인 실패',
-                  description: errorResponse.error_message,
-                })
               },
             },
           )

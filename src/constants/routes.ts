@@ -12,6 +12,11 @@ export enum ApiV1Paths {
 
   USERS = '/api/v1/users/:id?',
   USER_CHANGE_PASSWORD = '/api/v1/users/change-password',
+  USER_IMAGES = '/api/v1/users/images/:id?',
+
+  USER_SUMMONERS = '/api/v1/users/summoners/:id?',
+
+  PRESIGNED_URL = '/api/v1/upload/presigned-url',
 }
 
 export enum PagePaths {
@@ -21,4 +26,11 @@ export enum PagePaths {
   SignIn = '/sign/in',
   SignUp = '/sign/up',
   SocialSignUp = '/sign/up/social',
+
+  // my
+  MyProfile = '/my/profile',
+  MyPassword = '/my/password',
+
+  // user
+  UserProfile = '/users/:id?',
 }

@@ -8,7 +8,7 @@ const GeneralLayoutFooter = () => {
       <Flex
         w={'100%'}
         maxW={'1000px'}
-        p={2}
+        py={20}
         justify={'center'}
         align={'center'}
       >

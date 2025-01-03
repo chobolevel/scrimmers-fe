@@ -21,7 +21,7 @@ const GeneralLayoutHeader = () => {
       <Flex
         w={'100%'}
         maxW={'1000px'}
-        p={2}
+        py={2}
         align={'center'}
         justify={'space-between'}
       >
@@ -38,6 +38,14 @@ const GeneralLayoutHeader = () => {
         <Flex align={'center'} gap={2}>
           {isAuthenticated ? (
             <>
+              <Text
+                cursor={'pointer'}
+                onClick={() => {
+                  router.push(PagePaths.MyProfile)
+                }}
+              >
+                내 정보
+              </Text>
               <Text
                 cursor={'pointer'}
                 onClick={() => {

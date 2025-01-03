@@ -3,15 +3,13 @@ import { UnAuthenticatedLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { GoogleUserApi, LoginRequest, useLogin } from '@/apis'
-import { PagePaths } from '@/constants'
+import { Api, ApiResponse, GoogleUserApi, LoginRequest } from '@/apis'
+import { ApiV1Paths, PagePaths } from '@/constants'
 import { toaster } from '@/components/ui/toaster'
 import { encodeToBase64 } from 'next/dist/build/webpack/loaders/utils'
 
 const GoogleCodePage = () => {
   const router = useRouter()
-
-  const { mutate: login } = useLogin()
 
   useEffect(() => {
     const params = new URLSearchParams(router.asPath.split('#')[1])
@@ -24,19 +22,19 @@ const GoogleCodePage = () => {
           social_id: res.data.id,
           login_type: 'GOOGLE',
         } as LoginRequest
-        login(req, {
-          onSuccess: () => {
+        Api.instance
+          .post<ApiResponse<boolean>>(ApiV1Paths.LOGIN, req)
+          .then(() => {
             router.push(PagePaths.HOME)
-          },
-          onError: () => {
+          })
+          .catch(() => {
             router.push({
               pathname: PagePaths.SocialSignUp,
               query: {
                 base: encodeToBase64(req),
               },
             })
-          },
-        })
+          })
       })
       .catch(() => {
         router.push(PagePaths.HOME).then(() => {

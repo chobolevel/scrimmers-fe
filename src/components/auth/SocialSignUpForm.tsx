@@ -9,14 +9,13 @@ import { useRouter } from 'next/router'
 import { CSSProperties, useCallback, useEffect } from 'react'
 import { decodeFromBase64 } from 'next/dist/build/webpack/loaders/utils'
 import {
-  ApiErrorResponse,
   CreateUserRequest,
   LoginRequest,
   useCreateUser,
   useLogin,
+  UserGenderTypeArr,
 } from '@/apis'
 import { toaster } from '@/components/ui/toaster'
-import { AxiosError } from 'axios'
 import { ErrorText } from '@/components'
 import { ErrorMessage } from '@hookform/error-message'
 import {
@@ -42,10 +41,7 @@ const inputStyle = {
 } as CSSProperties
 
 const genders = createListCollection({
-  items: [
-    { label: '남성', value: 'MALE' },
-    { label: '여성', value: 'FEMALE' },
-  ],
+  items: UserGenderTypeArr,
 })
 
 const SocialSignUpForm = () => {
@@ -104,15 +100,6 @@ const SocialSignUpForm = () => {
                   },
                 },
               )
-            },
-            onError: (error) => {
-              const err = error as AxiosError
-              const errorResponse = err.response?.data as ApiErrorResponse
-              toaster.create({
-                type: 'error',
-                title: '회원가입 실패',
-                description: errorResponse.error_message,
-              })
             },
           })
         }, []),

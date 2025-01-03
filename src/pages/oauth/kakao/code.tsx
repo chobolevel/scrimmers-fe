@@ -1,6 +1,8 @@
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import {
+  Api,
+  ApiResponse,
   KakaoTokenApi,
   KakaoTokenRequest,
   KakaoTokenResponse,
@@ -12,7 +14,7 @@ import {
 import Head from 'next/head'
 import { UnAuthenticatedLayout } from '@/layout'
 import { Flex, Spinner } from '@chakra-ui/react'
-import { PagePaths } from '@/constants'
+import { ApiV1Paths, PagePaths } from '@/constants'
 import { toaster } from '@/components/ui/toaster'
 import { encodeToBase64 } from 'next/dist/build/webpack/loaders/utils'
 
@@ -39,19 +41,19 @@ const KakaoCodePage = () => {
                 social_id: res.data.id,
                 login_type: 'KAKAO',
               } as LoginRequest
-              login(loginRequest, {
-                onSuccess: () => {
+              Api.instance
+                .post<ApiResponse<boolean>>(ApiV1Paths.LOGIN, loginRequest)
+                .then(() => {
                   router.push(PagePaths.HOME)
-                },
-                onError: () => {
+                })
+                .catch(() => {
                   router.push({
                     pathname: PagePaths.SocialSignUp,
                     query: {
                       base: encodeToBase64(loginRequest),
                     },
                   })
-                },
-              })
+                })
             })
             .catch(() => {
               router.push(PagePaths.HOME).then(() => {

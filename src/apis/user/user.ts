@@ -5,11 +5,13 @@ import {
   ApiResponse,
   ID,
   Schema,
+  Team,
+  useInvalidate,
   UserImage,
   UserSummoner,
 } from '@/apis'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { ApiV1Paths, toUrl } from '@/constants'
+import { ApiV1Paths, images, toUrl } from '@/constants'
 
 export type UserLoginType = 'GENERAL' | 'KAKAO' | 'NAVER' | 'GOOGLE'
 export type UserGenderType = 'MALE' | 'FEMALE'
@@ -29,32 +31,63 @@ export type UserUpdateMask =
   | 'MAIN_POSITION'
   | 'SUB_POSITION'
 
+export const UserGenderTypeArr = [
+  { label: '남성', value: 'MALE' },
+  { label: '여성', value: 'FEMALE' },
+]
+
 export const UserPositionTypeObj = {
   NONE: {
     label: '미선택',
+    icon: images.none_position.src,
   },
   TOP: {
     label: '탑',
+    icon: images.top.src,
   },
   JUNGLE: {
     label: '정글',
+    icon: images.jungle.src,
   },
   MID: {
     label: '미드',
+    icon: images.mid.src,
   },
   BOTTOM: {
     label: '원딜',
+    icon: images.bottom.src,
   },
   SUPPORT: {
     label: '서폿',
+    icon: images.support.src,
   },
 }
+
+export const UserGenderTypeObj = {
+  MALE: {
+    label: '남성',
+    color: 'blue',
+  },
+  FEMALE: {
+    label: '여성',
+    color: 'pink',
+  },
+}
+
+export const UserPositionTypeArr = [
+  { label: '상관없음', value: 'NONE' },
+  { label: '탑', value: 'TOP' },
+  { label: '정글', value: 'JUNGLE' },
+  { label: '미드', value: 'MID' },
+  { label: '원딜', value: 'BOTTOM' },
+  { label: '서폿', value: 'SUPPORT' },
+]
 
 export interface User extends Schema {
   email: string
   login_type: UserLoginType
   nickname: string
-  age: number
+  age_range: number
   birth: string
   gender: UserGenderType
   main_position: UserPositionType
@@ -64,10 +97,11 @@ export interface User extends Schema {
 }
 
 export interface UserDetail extends Schema {
+  team?: Team
   email: string
   login_type: UserLoginType
   nickname: string
-  age: number
+  age_range: number
   birth: string
   gender: UserGenderType
   main_position: UserPositionType
@@ -109,6 +143,7 @@ export interface UpdateUserRequest {
 export interface ChangePasswordRequest {
   current_password: string
   new_password: string
+  new_password_check: string
 }
 
 export interface DeleteUserRequest {
@@ -121,6 +156,7 @@ export const useCreateUser = () => {
       Api.instance
         .post(toUrl(ApiV1Paths.USERS), request)
         .then((res) => res.data.data),
+    onSettled: useInvalidate(toUrl(ApiV1Paths.USERS)),
   })
 }
 
