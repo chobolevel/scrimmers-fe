@@ -36,7 +36,15 @@ const MyProfileTeamSection = ({ team }: MyProfileTeamSectionProps) => {
       </Flex>
       {team ? (
         <Flex align={'center'} gap={10}>
-          <Flex direction={'column'} gap={2} align={'center'}>
+          <Flex
+            direction={'column'}
+            gap={2}
+            align={'center'}
+            cursor={'pointer'}
+            onClick={() => {
+              router.push(toUrl(PagePaths.TeamDetail, { id: team.id }))
+            }}
+          >
             {team?.logo ? (
               <Image
                 w={100}

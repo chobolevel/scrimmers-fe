@@ -8,7 +8,12 @@ interface MobileLayoutProps {
 
 const MobileLayout = ({ children }: MobileLayoutProps) => {
   return (
-    <Flex minH={'100vh'} direction={'column'} bgColor={'blue.950'}>
+    <Flex
+      minH={'100vh'}
+      direction={'column'}
+      bgColor={'blue.950'}
+      position={'relative'}
+    >
       <MobileLayoutHeader />
       <Flex direction={'column'} p={4}>
         {children}

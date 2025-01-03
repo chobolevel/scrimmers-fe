@@ -1,6 +1,7 @@
 import axios, {
   AxiosError,
   AxiosInstance,
+  AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
 import { ApiErrorResponse } from '@/apis'
@@ -15,6 +16,41 @@ export class Api {
     },
     withCredentials: true,
   })
+  static get = async <T>(url: string, params?: object) => {
+    return Api.instance
+      .get<AxiosResponse<T>>(url, {
+        params,
+        paramsSerializer: (params) => {
+          const serializedParams = new URLSearchParams()
+          for (const key in params) {
+            if (Array.isArray(params[key])) {
+              const serializedArrayValue = params[key].join(',')
+              serializedParams.append(key, serializedArrayValue)
+            } else if (params[key] !== undefined) {
+              serializedParams.append(key, params[key])
+            }
+          }
+          return serializedParams.toString()
+        },
+      })
+      .then((res) => res.data.data)
+  }
+  static post = async <T>(url: string, body?: object) => {
+    return Api.instance
+      .post<AxiosResponse<T>>(url, body)
+      .then((res) => res.data.data)
+  }
+
+  static put = async <T>(url: string, body?: object) => {
+    return Api.instance
+      .put<AxiosResponse<T>>(url, body)
+      .then((res) => res.data.data)
+  }
+  static delete = async <T>(url: string) => {
+    return Api.instance
+      .delete<AxiosResponse<T>>(url)
+      .then((res) => res.data.data)
+  }
 }
 
 Api.instance.interceptors.response.use(

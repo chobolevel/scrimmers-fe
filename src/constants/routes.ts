@@ -16,6 +16,10 @@ export enum ApiV1Paths {
 
   USER_SUMMONERS = '/api/v1/users/summoners/:id?',
 
+  TEAMS = '/api/v1/teams/:id?',
+
+  TEAM_IMAGES = '/api/v1/teams/:teamId?/images/:teamImageId?',
+
   PRESIGNED_URL = '/api/v1/upload/presigned-url',
 }
 
@@ -33,4 +37,9 @@ export enum PagePaths {
 
   // user
   UserProfile = '/users/:id?',
+
+  // team
+  Teams = '/teams/',
+  TeamDetail = '/teams/:id?',
+  TeamRegistration = '/teams/registration',
 }

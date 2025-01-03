@@ -15,6 +15,12 @@ interface ReactQueryProviderProps {
 
 const ReactQueryProvider = ({ children }: ReactQueryProviderProps) => {
   const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 0,
+        refetchOnWindowFocus: false,
+      },
+    },
     queryCache: new QueryCache({
       onError: (error) => {
         if (!isAxiosError<ApiErrorResponse>(error)) return

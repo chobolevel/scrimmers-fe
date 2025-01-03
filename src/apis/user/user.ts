@@ -160,13 +160,12 @@ export const useCreateUser = () => {
   })
 }
 
-export const useGetUsers = (params?: GetUsersParams) => {
+export const useGetUsers = (params?: GetUsersParams, enabled = true) => {
   return useQuery({
-    queryKey: [ApiV1Paths.USERS],
+    queryKey: [toUrl(ApiV1Paths.USERS), params],
     queryFn: () =>
-      Api.instance
-        .get<ApiPagingResponse<User[]>>(toUrl(ApiV1Paths.USERS), { params })
-        .then((res) => res.data.data),
+      Api.get<ApiPagingResponse<User[]>>(toUrl(ApiV1Paths.USERS), params),
+    enabled,
   })
 }
 

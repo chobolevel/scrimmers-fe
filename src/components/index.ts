@@ -19,6 +19,15 @@ export {
   MyProfileUserSection,
 } from './my'
 export {
+  ModifyTeamForm,
+  TeamDetail,
+  TeamList,
+  TeamListItem,
+  TeamRegistrationForm,
+} from './team'
+export {
+  UserList,
+  UserListItem,
   UserProfile,
   UserProfileInfoSection,
   UserProfileSummonerSection,
