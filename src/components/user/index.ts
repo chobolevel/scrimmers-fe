@@ -1,2 +1,7 @@
 export { UserSummonerSearchDialog } from './summoner'
-export { default as UserProfile } from './Profile'
+export {
+  UserProfile,
+  UserProfileInfoSection,
+  UserProfileSummonerSection,
+  UserProfileTeamSection,
+} from './profile'

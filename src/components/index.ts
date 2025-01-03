@@ -4,6 +4,24 @@ export {
   SocialLoginButtons,
   SocialSignUpForm,
 } from './auth'
-export { ImageUploader, ErrorText, Logo } from './common'
-export { MyProfile } from './my'
-export { UserProfile, UserSummonerSearchDialog } from './user'
+export {
+  ImageUploader,
+  AlertDialog,
+  ConfirmDialog,
+  ErrorText,
+  Logo,
+} from './common'
+export {
+  ChangePasswordForm,
+  MyProfile,
+  MyProfileSummonerSection,
+  MyProfileTeamSection,
+  MyProfileUserSection,
+} from './my'
+export {
+  UserProfile,
+  UserProfileInfoSection,
+  UserProfileSummonerSection,
+  UserProfileTeamSection,
+  UserSummonerSearchDialog,
+} from './user'
