@@ -24,6 +24,9 @@ const MobileLayoutHeader = () => {
       justify={'center'}
       fontWeight={'bold'}
       bgColor={'blue.800'}
+      position={'sticky'}
+      top={0}
+      zIndex={100}
     >
       <Flex
         w={'100%'}

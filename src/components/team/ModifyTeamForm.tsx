@@ -1,0 +1,411 @@
+import {
+  Button,
+  Flex,
+  Image,
+  Input,
+  Separator,
+  Spinner,
+  Text,
+  Textarea,
+} from '@chakra-ui/react'
+import {
+  Team,
+  useCreateTeamImage,
+  useDeleteTeamImage,
+  useGetUsers,
+  useInvalidate,
+  useUpdateTeam,
+  useUpdateTeamImage,
+} from '@/apis'
+import React, { useMemo, useRef, useState } from 'react'
+import { RiTeamFill } from 'react-icons/ri'
+import {
+  ImageUploader,
+  TeamJoinRequestList,
+  TeamLeaveRequestList,
+  TeamUserList,
+} from '@/components'
+import { ApiV1Paths, toUrl } from '@/constants'
+import { NumberInputField, NumberInputRoot } from '@/components/ui/number-input'
+import { toaster } from '@/components/ui/toaster'
+import { useGetTeamJoinRequests } from '@/apis/team/join'
+import {
+  PaginationItems,
+  PaginationNextTrigger,
+  PaginationPrevTrigger,
+  PaginationRoot,
+} from '@/components/ui/pagination'
+import { useGetTeamLeaveRequests } from '@/apis/team/leave'
+
+interface ModifyTeamFormProps {
+  team: Team
+}
+
+const LIMIT_COUNT = 5
+
+const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
+  const [name, setName] = useState<string>(team.name)
+  const [maxHeadCount, setMaxHeadCount] = useState<number>(team.max_head_count)
+  const [description, setDescription] = useState<string>(team.description)
+  const logoImageUploaderRef = useRef<HTMLInputElement>(null)
+  const [teamJoinRequestPage, setTeamJoinRequestPage] = useState<number>(1)
+  const [teamLeaveRequestPage, setTeamLeaveRequestPage] = useState<number>(1)
+
+  const invalidateTeam = useInvalidate(toUrl(ApiV1Paths.TEAMS, { id: team.id }))
+  const { data: users, isFetching: usersIsFetching } = useGetUsers(
+    { teamId: team.id },
+    !!team.id,
+  )
+  const { data: teamJoinRequests, isFetching: teamJoinRequestsIsFetching } =
+    useGetTeamJoinRequests(
+      {
+        teamId: team.id,
+        skipCount: (teamJoinRequestPage - 1) * LIMIT_COUNT,
+        limitCount: LIMIT_COUNT,
+      },
+      !!team.id,
+    )
+  const { data: teamLeaveRequests, isFetching: teamLeaveRequestsIsFetching } =
+    useGetTeamLeaveRequests(
+      {
+        teamId: team.id,
+        skipCount: (teamLeaveRequestPage - 1) * LIMIT_COUNT,
+        limitCount: LIMIT_COUNT,
+      },
+      !!team.id,
+    )
+  const { mutate: updateTeam } = useUpdateTeam()
+  const { mutate: createTeamImage } = useCreateTeamImage()
+  const { mutate: updateTeamImage } = useUpdateTeamImage()
+  const { mutate: deleteTeamImage } = useDeleteTeamImage()
+
+  const logo = useMemo(() => team?.logo, [team])
+  return (
+    <Flex direction={'column'} gap={6}>
+      <Flex direction={'column'} gap={6}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          팀 정보
+        </Text>
+        <Flex align={'start'} gap={10}>
+          <Flex
+            w={150}
+            h={150}
+            direction={'column'}
+            align={'center'}
+            gap={4}
+            mt={10}
+          >
+            {logo ? (
+              <Image
+                src={logo.url}
+                alt={`${team.name} 로고 이미지`}
+                objectFit={'contain'}
+              />
+            ) : (
+              <RiTeamFill size={150} />
+            )}
+            <ImageUploader
+              inputRef={logoImageUploaderRef}
+              onUpload={(url, filename) => {
+                if (logo) {
+                  updateTeamImage(
+                    {
+                      team_id: team.id,
+                      team_image_id: logo.id,
+                      url,
+                      name: filename,
+                      update_mask: ['URL', 'NAME'],
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidateTeam()
+                      },
+                    },
+                  )
+                } else {
+                  createTeamImage(
+                    {
+                      team_id: team.id,
+                      type: 'LOGO',
+                      url,
+                      name: filename,
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidateTeam()
+                      },
+                    },
+                  )
+                }
+              }}
+            />
+            {logo && (
+              <Button
+                size={'xs'}
+                fontWeight={'bold'}
+                onClick={() => {
+                  deleteTeamImage(
+                    {
+                      team_id: team.id,
+                      team_image_id: logo.id,
+                    },
+                    {
+                      onSuccess: () => {
+                        invalidateTeam()
+                      },
+                    },
+                  )
+                }}
+              >
+                기본 로고
+              </Button>
+            )}
+            <Button
+              size={'xs'}
+              fontWeight={'bold'}
+              onClick={() => {
+                logoImageUploaderRef.current?.click()
+              }}
+            >
+              {logo ? '팀 로고 수정' : '팀 로고 등록'}
+            </Button>
+          </Flex>
+          <Flex flex={1} direction={'column'} gap={6}>
+            <Flex direction={'column'} gap={2}>
+              <Text fontSize={'sm'} fontWeight={'bold'}>
+                팀 이름
+              </Text>
+              <Flex align={'center'} gap={2}>
+                <Input
+                  type={'text'}
+                  placeholder={'팀 이름'}
+                  maxW={200}
+                  value={name}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setName(val)
+                  }}
+                />
+                <Button
+                  size={'sm'}
+                  fontWeight={'bold'}
+                  colorPalette={'green'}
+                  disabled={
+                    name.length < 1 ||
+                    name.toLowerCase() === team.name.toLowerCase()
+                  }
+                  onClick={() => {
+                    updateTeam(
+                      {
+                        id: team.id,
+                        name,
+                        update_mask: ['NAME'],
+                      },
+                      {
+                        onSuccess: () => {
+                          invalidateTeam()
+                          toaster.create({
+                            type: 'success',
+                            title: '팀 이름 수정 완료',
+                          })
+                        },
+                      },
+                    )
+                  }}
+                >
+                  수정
+                </Button>
+              </Flex>
+            </Flex>
+            <Flex direction={'column'} gap={2}>
+              <Text fontSize={'sm'} fontWeight={'bold'}>
+                {`팀 총원(현재 팀원 ${team.head_count}명)`}
+              </Text>
+              <Flex align={'center'} gap={2}>
+                <NumberInputRoot
+                  maxW={100}
+                  step={1}
+                  min={team.head_count}
+                  max={100}
+                  value={maxHeadCount.toString()}
+                  onValueChange={(e) => {
+                    setMaxHeadCount(Number(e.value))
+                  }}
+                >
+                  <NumberInputField />
+                </NumberInputRoot>
+                <Button
+                  size={'sm'}
+                  fontWeight={'bold'}
+                  colorPalette={'green'}
+                  onClick={() => {
+                    updateTeam(
+                      {
+                        id: team.id,
+                        max_head_count: maxHeadCount,
+                        update_mask: ['MAX_HEAD_COUNT'],
+                      },
+                      {
+                        onSuccess: () => {
+                          invalidateTeam()
+                          toaster.create({
+                            type: 'success',
+                            title: '팀 총원 수정 완료',
+                          })
+                        },
+                      },
+                    )
+                  }}
+                >
+                  수정
+                </Button>
+              </Flex>
+            </Flex>
+            <Flex direction={'column'} gap={2}>
+              <Flex align={'center'} justify={'space-between'} gap={2}>
+                <Text fontSize={'sm'} fontWeight={'bold'}>
+                  팀 소개
+                </Text>
+                <Button
+                  size={'sm'}
+                  fontWeight={'bold'}
+                  colorPalette={'green'}
+                  disabled={description.length < 10}
+                  onClick={() => {
+                    updateTeam(
+                      {
+                        id: team.id,
+                        description,
+                        update_mask: ['DESCRIPTION'],
+                      },
+                      {
+                        onSuccess: () => {
+                          invalidateTeam()
+                          toaster.create({
+                            type: 'success',
+                            title: '팀 소개글 수정 완료',
+                          })
+                        },
+                      },
+                    )
+                  }}
+                >
+                  수정
+                </Button>
+              </Flex>
+              <Textarea
+                placeholder={'팀 소개'}
+                minH={100}
+                value={description}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setDescription(val)
+                }}
+              />
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+      <Separator />
+      <Flex direction={'column'} gap={6}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          팀원
+        </Text>
+        {users ? (
+          <TeamUserList users={users.data} />
+        ) : (
+          <Flex h={200} justify={'center'} align={'center'}>
+            {usersIsFetching ? (
+              <Spinner size={'lg'} />
+            ) : (
+              <Text fontWeight={'bold'}>검색 조건에 맞는 팀원이 없습니다.</Text>
+            )}
+          </Flex>
+        )}
+      </Flex>
+      <Separator />
+      <Flex direction={'column'} gap={6}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          팀 가입 신청
+        </Text>
+        {teamJoinRequests ? (
+          <>
+            <TeamJoinRequestList requests={teamJoinRequests.data} />
+            <Flex align={'center'} justify={'center'}>
+              <PaginationRoot
+                page={teamJoinRequestPage}
+                pageSize={LIMIT_COUNT}
+                count={teamJoinRequests.total_count}
+                onPageChange={(e) => setTeamJoinRequestPage(e.page)}
+                variant={'subtle'}
+              >
+                <Flex align={'center'} gap={2}>
+                  <PaginationPrevTrigger />
+                  <PaginationItems />
+                  <PaginationNextTrigger />
+                </Flex>
+              </PaginationRoot>
+            </Flex>
+          </>
+        ) : (
+          <Flex h={200} justify={'center'} align={'center'}>
+            {teamJoinRequestsIsFetching ? (
+              <Spinner size={'lg'} />
+            ) : (
+              <Text fontWeight={'bold'}>
+                검색 조건에 맞는 가입 신청이 없습니다.
+              </Text>
+            )}
+          </Flex>
+        )}
+      </Flex>
+      <Flex direction={'column'} gap={6}>
+        <Text fontSize={'lg'} fontWeight={'bold'}>
+          팀 탈퇴 신청
+        </Text>
+        {teamLeaveRequests ? (
+          <>
+            <TeamLeaveRequestList requests={teamLeaveRequests.data} />
+            <Flex align={'center'} justify={'center'}>
+              <PaginationRoot
+                page={teamLeaveRequestPage}
+                pageSize={LIMIT_COUNT}
+                count={teamLeaveRequests.total_count}
+                onPageChange={(e) => setTeamLeaveRequestPage(e.page)}
+                variant={'subtle'}
+              >
+                <Flex align={'center'} gap={2}>
+                  <PaginationPrevTrigger />
+                  <PaginationItems />
+                  <PaginationNextTrigger />
+                </Flex>
+              </PaginationRoot>
+            </Flex>
+          </>
+        ) : (
+          <Flex h={200} justify={'center'} align={'center'}>
+            {teamLeaveRequestsIsFetching ? (
+              <Spinner size={'lg'} />
+            ) : (
+              <Text fontWeight={'bold'}>
+                검색 조건에 맞는 탈퇴 신청이 없습니다.
+              </Text>
+            )}
+          </Flex>
+        )}
+      </Flex>
+      <Flex align={'center'} justify={'center'} py={20}>
+        <Button
+          size={'sm'}
+          fontWeight={'bold'}
+          colorPalette={'red'}
+          variant={'ghost'}
+        >
+          팀 해체
+        </Button>
+      </Flex>
+    </Flex>
+  )
+}
+
+export default ModifyTeamForm

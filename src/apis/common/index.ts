@@ -10,7 +10,7 @@ export interface ApiPagingResponse<T> {
   skip_count: number
   limit_count: number
   total_count: number
-  data: T[]
+  data: T
 }
 
 export interface ApiErrorResponse {
@@ -29,8 +29,8 @@ export interface Schema {
 }
 
 export interface ApiPagingRequest {
-  skipCount: number
-  limitCount: number
+  skipCount?: number
+  limitCount?: number
 }
 
 export const useInvalidate = (url: string, params?: object) => {

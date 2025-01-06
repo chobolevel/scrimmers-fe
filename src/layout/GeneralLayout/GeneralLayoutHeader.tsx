@@ -17,6 +17,9 @@ const GeneralLayoutHeader = () => {
       justify={'center'}
       fontWeight={'bold'}
       bgColor={'blue.800'}
+      position={'sticky'}
+      top={0}
+      zIndex={100}
     >
       <Flex
         w={'100%'}
@@ -25,7 +28,7 @@ const GeneralLayoutHeader = () => {
         align={'center'}
         justify={'space-between'}
       >
-        <Flex align={'center'}>
+        <Flex align={'center'} gap={6}>
           <Text
             cursor={'pointer'}
             onClick={() => {
@@ -33,6 +36,14 @@ const GeneralLayoutHeader = () => {
             }}
           >
             SCRIMMERS
+          </Text>
+          <Text
+            cursor={'pointer'}
+            onClick={() => {
+              router.push(PagePaths.Teams)
+            }}
+          >
+            팀
           </Text>
         </Flex>
         <Flex align={'center'} gap={2}>

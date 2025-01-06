@@ -8,7 +8,12 @@ interface GeneralLayoutProps {
 
 const GeneralLayout = ({ children }: GeneralLayoutProps) => {
   return (
-    <Flex minH={'100vh'} direction={'column'} bgColor={'blue.950'}>
+    <Flex
+      minH={'100vh'}
+      direction={'column'}
+      bgColor={'blue.950'}
+      position={'relative'}
+    >
       <GeneralLayoutHeader />
       <Flex direction={'column'} align={'center'}>
         <Flex w={'100%'} maxW={1000} py={4} direction={'column'}>
