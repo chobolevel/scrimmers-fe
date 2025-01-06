@@ -9,7 +9,7 @@ interface UserListItemProps {
   user: User
 }
 
-const UserListItem = ({ user }: UserListItemProps) => {
+const TeamUserListItem = ({ user }: UserListItemProps) => {
   const profileImage = useMemo(() => user?.profile_image, [user])
   const gender = useMemo(() => UserGenderTypeObj[user.gender], [user])
   const mainPosition = useMemo(
@@ -75,4 +75,4 @@ const UserListItem = ({ user }: UserListItemProps) => {
   )
 }
 
-export default UserListItem
+export default TeamUserListItem

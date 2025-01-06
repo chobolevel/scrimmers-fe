@@ -1,19 +1,19 @@
 import { Flex } from '@chakra-ui/react'
 import { User } from '@/apis'
-import { UserListItem } from '@/components'
+import { TeamUserListItem } from '@/components'
 
 interface UserListProps {
   users: User[]
 }
 
-const UserList = ({ users }: UserListProps) => {
+const TeamUserList = ({ users }: UserListProps) => {
   return (
     <Flex direction={'column'}>
       {users.map((user, idx) => {
-        return <UserListItem key={idx} user={user} />
+        return <TeamUserListItem key={idx} user={user} />
       })}
     </Flex>
   )
 }
 
-export default UserList
+export default TeamUserList

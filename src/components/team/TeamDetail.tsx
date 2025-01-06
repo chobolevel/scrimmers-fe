@@ -3,10 +3,10 @@ import { RiTeamFill } from 'react-icons/ri'
 import { FaCrown } from 'react-icons/fa6'
 import { PagePaths, toUrl } from '@/constants'
 import { MdSupervisorAccount } from 'react-icons/md'
-import { UserList } from '@/components'
+import { TeamJoinRequestRegistrationDialog, TeamUserList } from '@/components'
 import React, { useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { Team, useGetUsers } from '@/apis'
+import { Team, useGetMe, useGetUsers } from '@/apis'
 
 interface TeamDetailProps {
   team: Team
@@ -15,6 +15,7 @@ interface TeamDetailProps {
 const TeamDetail = ({ team }: TeamDetailProps) => {
   const router = useRouter()
 
+  const { data: me } = useGetMe()
   const { data: users, isFetching } = useGetUsers(
     {
       teamId: router.query.id as string,
@@ -23,12 +24,16 @@ const TeamDetail = ({ team }: TeamDetailProps) => {
   )
 
   const logo = useMemo(() => team?.logo, [team])
+  const myTeam = useMemo(() => me?.team, [me])
   return (
     <Flex direction={'column'} gap={6}>
       <Flex direction={'column'} gap={4}>
-        <Text fontSize={'lg'} fontWeight={'bold'}>
-          팀 정보
-        </Text>
+        <Flex align={'center'} justify={'space-between'}>
+          <Text fontSize={'lg'} fontWeight={'bold'}>
+            팀 정보
+          </Text>
+          {!myTeam && <TeamJoinRequestRegistrationDialog team={team} />}
+        </Flex>
         <Flex p={4} align={'center'} gap={10}>
           <Flex direction={'column'} align={'center'} w={100} h={100} gap={2}>
             {logo ? (
@@ -77,7 +82,7 @@ const TeamDetail = ({ team }: TeamDetailProps) => {
           팀원
         </Text>
         {users ? (
-          <UserList users={users.data} />
+          <TeamUserList users={users.data} />
         ) : (
           <Flex h={200} justify={'center'} align={'center'}>
             {isFetching ? (

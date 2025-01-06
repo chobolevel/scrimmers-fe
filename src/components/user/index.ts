@@ -1,4 +1,3 @@
-export { UserList, UserListItem } from './list'
 export {
   UserProfile,
   UserProfileInfoSection,

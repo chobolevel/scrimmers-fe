@@ -1,12 +1,12 @@
-import { Badge, Flex, Image, Text } from '@chakra-ui/react'
+import { Badge, Button, Flex, Image, Text } from '@chakra-ui/react'
 import { RiTeamFill } from 'react-icons/ri'
 import { FaCrown } from 'react-icons/fa6'
 import { PagePaths, toUrl } from '@/constants'
 import { MdSupervisorAccount } from 'react-icons/md'
-import React from 'react'
-import { Team } from '@/apis'
+import React, { useMemo } from 'react'
+import { Team, useGetMe } from '@/apis'
 import { useRouter } from 'next/router'
-import { ConfirmDialog } from '@/components'
+import TeamLeaveRequestRegistrationDialog from '@/components/team/leave/TeamLeaveRequestRegistrationDialog'
 
 interface MyProfileTeamSectionProps {
   team?: Team
@@ -14,25 +14,34 @@ interface MyProfileTeamSectionProps {
 
 const MyProfileTeamSection = ({ team }: MyProfileTeamSectionProps) => {
   const router = useRouter()
+
+  const { data: me } = useGetMe()
+
+  const isOwner = useMemo(() => me?.id === team?.owner_id, [me, team])
   return (
     <Flex direction={'column'} gap={4}>
       <Flex align={'center'} justify={'space-between'}>
         <Text fontSize={'lg'} fontWeight={'bold'}>
           팀 정보
         </Text>
-        <ConfirmDialog
-          buttonText={'팀 탈퇴'}
-          buttonStyle={{
-            size: 'xs',
-            colorPalette: 'red',
-            variant: 'ghost',
-          }}
-          title={'팀 탈퇴 신청'}
-          description={'정말 팀 탈퇴를 신청하시겠습니까?'}
-          onConfirm={() => {
-            console.log('팀 탈퇴 신청')
-          }}
-        />
+        {team && (
+          <Flex align={'center'} gap={2}>
+            {isOwner ? (
+              <Button
+                size={'xs'}
+                fontWeight={'bold'}
+                variant={'ghost'}
+                onClick={() => {
+                  router.push(toUrl(PagePaths.ModifyTeam, { id: team?.id }))
+                }}
+              >
+                팀 관리
+              </Button>
+            ) : (
+              <TeamLeaveRequestRegistrationDialog team={team} />
+            )}
+          </Flex>
+        )}
       </Flex>
       {team ? (
         <Flex align={'center'} gap={10}>

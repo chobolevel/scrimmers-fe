@@ -19,6 +19,13 @@ export {
   MyProfileUserSection,
 } from './my'
 export {
+  TeamJoinRequestList,
+  TeamJoinRequestListItem,
+  TeamJoinRequestRegistrationDialog,
+  TeamLeaveRequestList,
+  TeamLeaveRequestListItem,
+  TeamUserList,
+  TeamUserListItem,
   ModifyTeamForm,
   TeamDetail,
   TeamList,
@@ -26,8 +33,6 @@ export {
   TeamRegistrationForm,
 } from './team'
 export {
-  UserList,
-  UserListItem,
   UserProfile,
   UserProfileInfoSection,
   UserProfileSummonerSection,

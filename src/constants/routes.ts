@@ -20,6 +20,13 @@ export enum ApiV1Paths {
 
   TEAM_IMAGES = '/api/v1/teams/:teamId?/images/:teamImageId?',
 
+  TEAM_JOIN_REQUESTS = '/api/v1/teams/join-requests/:id?',
+  APPROVE_TEAM_JOIN_REQUEST = '/api/v1/teams/join-requests/:id?/approve',
+  REJECT_TEAM_JOIN_REQUEST = '/api/v1/teams/join-requests/:id?/reject',
+  TEAM_LEAVE_REQUESTS = '/api/v1/teams/leave-requests/:id?',
+  APPROVE_TEAM_LEAVE_REQUEST = '/api/v1/teams/leave-requests/:id?/approve',
+  REJECT_TEAM_LEAVE_REQUEST = '/api/v1/teams/leave-requests/:id?/reject',
+
   PRESIGNED_URL = '/api/v1/upload/presigned-url',
 }
 
@@ -42,4 +49,5 @@ export enum PagePaths {
   Teams = '/teams/',
   TeamDetail = '/teams/:id?',
   TeamRegistration = '/teams/registration',
+  ModifyTeam = '/teams/:id?/modify',
 }
