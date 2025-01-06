@@ -69,7 +69,7 @@ const SignUpForm = () => {
             },
             {
               onSuccess: () => {
-                router.push(PagePaths.HOME).then(() => {
+                router.push(PagePaths.SignIn).then(() => {
                   toaster.create({
                     type: 'success',
                     title: '회원가입 성공',
