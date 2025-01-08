@@ -82,7 +82,7 @@ const TeamDetail = ({ team }: TeamDetailProps) => {
           팀원
         </Text>
         {users ? (
-          <TeamUserList team={team} users={users.data} />
+          <TeamUserList modifiable={false} team={team} users={users.data} />
         ) : (
           <Flex h={200} justify={'center'} align={'center'}>
             {isFetching ? (

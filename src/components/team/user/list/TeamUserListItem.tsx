@@ -19,9 +19,10 @@ import { toaster } from '@/components/ui/toaster'
 interface UserListItemProps {
   team: Team
   user: User
+  modifiable: boolean
 }
 
-const TeamUserListItem = ({ team, user }: UserListItemProps) => {
+const TeamUserListItem = ({ modifiable, team, user }: UserListItemProps) => {
   const teamUsersInvalidate = useInvalidate(toUrl(ApiV1Paths.USERS))
 
   const { data: me } = useGetMe()
@@ -102,7 +103,7 @@ const TeamUserListItem = ({ team, user }: UserListItemProps) => {
               alt={subPosition.label}
             />
           </Flex>
-          {isMeOwner && !isOwner && (
+          {modifiable && isMeOwner && !isOwner && (
             <ConfirmDialog
               buttonText={'추방'}
               buttonStyle={{

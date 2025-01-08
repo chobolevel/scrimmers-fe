@@ -323,7 +323,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
           팀원
         </Text>
         {users ? (
-          <TeamUserList team={team} users={users.data} />
+          <TeamUserList modifiable={true} team={team} users={users.data} />
         ) : (
           <Flex h={200} justify={'center'} align={'center'}>
             {usersIsFetching ? (
