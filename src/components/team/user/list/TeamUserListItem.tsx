@@ -1,15 +1,32 @@
 import { Badge, Flex, Image, Text } from '@chakra-ui/react'
-import { User, UserGenderTypeObj, UserPositionTypeObj } from '@/apis'
+import {
+  Team,
+  useBanishTeamUsers,
+  useGetMe,
+  useInvalidate,
+  User,
+  UserGenderTypeObj,
+  UserPositionTypeObj,
+} from '@/apis'
 import { useMemo } from 'react'
 import { FaUserAlt } from 'react-icons/fa'
 import { router } from 'next/client'
-import { PagePaths, toUrl } from '@/constants'
+import { ApiV1Paths, PagePaths, toUrl } from '@/constants'
+import { FaCrown } from 'react-icons/fa6'
+import { ConfirmDialog } from '@/components'
+import { toaster } from '@/components/ui/toaster'
 
 interface UserListItemProps {
+  team: Team
   user: User
 }
 
-const TeamUserListItem = ({ user }: UserListItemProps) => {
+const TeamUserListItem = ({ team, user }: UserListItemProps) => {
+  const teamUsersInvalidate = useInvalidate(toUrl(ApiV1Paths.USERS))
+
+  const { data: me } = useGetMe()
+  const { mutate: banishTeamUser } = useBanishTeamUsers()
+
   const profileImage = useMemo(() => user?.profile_image, [user])
   const gender = useMemo(() => UserGenderTypeObj[user.gender], [user])
   const mainPosition = useMemo(
@@ -20,9 +37,21 @@ const TeamUserListItem = ({ user }: UserListItemProps) => {
     () => UserPositionTypeObj[user.sub_position],
     [user],
   )
+  const isMeOwner = useMemo(() => team.owner_id === me?.id, [me])
+  const isOwner = useMemo(() => team.owner_id === user.id, [user])
   return (
-    <Flex align={'center'} gap={10} p={4}>
-      <Flex w={50} h={50}>
+    <Flex align={'center'} gap={{ base: 6, lg: 10 }} p={4}>
+      <Flex w={50} h={50} position={'relative'}>
+        {isOwner && (
+          <Flex
+            w={'100%'}
+            position={'absolute'}
+            top={'-20px'}
+            justify={'center'}
+          >
+            <FaCrown size={20} color={'yellow'} />
+          </Flex>
+        )}
         {profileImage ? (
           <Image
             src={profileImage.url}
@@ -46,7 +75,11 @@ const TeamUserListItem = ({ user }: UserListItemProps) => {
             {`${user.age_range}대 ${gender.label}`}
           </Badge>
         </Flex>
-        <Flex align={'center'} gap={4}>
+        <Flex
+          direction={{ base: 'column', lg: 'row' }}
+          align={{ base: 'start', lg: 'center' }}
+          gap={4}
+        >
           <Flex align={'center'} gap={2}>
             <Text fontSize={'sm'} fontWeight={'bold'}>
               주포지션
@@ -69,6 +102,35 @@ const TeamUserListItem = ({ user }: UserListItemProps) => {
               alt={subPosition.label}
             />
           </Flex>
+          {isMeOwner && !isOwner && (
+            <ConfirmDialog
+              buttonText={'추방'}
+              buttonStyle={{
+                size: 'xs',
+                fontWeight: 'bold',
+                colorPalette: 'red',
+              }}
+              title={'팀원 추방'}
+              description={`정말 ${user.nickname}님을 추방하시겠습니까?`}
+              onConfirm={() => {
+                banishTeamUser(
+                  {
+                    team_id: team.id,
+                    user_ids: [user.id],
+                  },
+                  {
+                    onSuccess: () => {
+                      teamUsersInvalidate()
+                      toaster.create({
+                        type: 'success',
+                        title: '팀원 추방 완료',
+                      })
+                    },
+                  },
+                )
+              }}
+            />
+          )}
         </Flex>
       </Flex>
     </Flex>

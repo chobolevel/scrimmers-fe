@@ -36,7 +36,9 @@ const ConfirmDialog = ({
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
         <DialogBody>
-          <Text>{description}</Text>
+          <Text whiteSpace={'break-spaces'} textAlign={'center'}>
+            {description}
+          </Text>
         </DialogBody>
         <DialogFooter>
           <DialogActionTrigger asChild>

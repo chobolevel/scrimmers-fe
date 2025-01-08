@@ -11,6 +11,7 @@ import {
 import {
   Team,
   useCreateTeamImage,
+  useDeleteTeam,
   useDeleteTeamImage,
   useGetUsers,
   useInvalidate,
@@ -20,12 +21,13 @@ import {
 import React, { useMemo, useRef, useState } from 'react'
 import { RiTeamFill } from 'react-icons/ri'
 import {
+  ConfirmDialog,
   ImageUploader,
   TeamJoinRequestList,
   TeamLeaveRequestList,
   TeamUserList,
 } from '@/components'
-import { ApiV1Paths, toUrl } from '@/constants'
+import { ApiV1Paths, PagePaths, toUrl } from '@/constants'
 import { NumberInputField, NumberInputRoot } from '@/components/ui/number-input'
 import { toaster } from '@/components/ui/toaster'
 import { useGetTeamJoinRequests } from '@/apis/team/join'
@@ -36,6 +38,7 @@ import {
   PaginationRoot,
 } from '@/components/ui/pagination'
 import { useGetTeamLeaveRequests } from '@/apis/team/leave'
+import { router } from 'next/client'
 
 interface ModifyTeamFormProps {
   team: Team
@@ -53,7 +56,10 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
 
   const invalidateTeam = useInvalidate(toUrl(ApiV1Paths.TEAMS, { id: team.id }))
   const { data: users, isFetching: usersIsFetching } = useGetUsers(
-    { teamId: team.id },
+    {
+      teamId: team.id,
+      limitCount: team.head_count,
+    },
     !!team.id,
   )
   const { data: teamJoinRequests, isFetching: teamJoinRequestsIsFetching } =
@@ -75,6 +81,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
       !!team.id,
     )
   const { mutate: updateTeam } = useUpdateTeam()
+  const { mutate: deleteTeam } = useDeleteTeam()
   const { mutate: createTeamImage } = useCreateTeamImage()
   const { mutate: updateTeamImage } = useUpdateTeamImage()
   const { mutate: deleteTeamImage } = useDeleteTeamImage()
@@ -86,7 +93,11 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
         <Text fontSize={'lg'} fontWeight={'bold'}>
           팀 정보
         </Text>
-        <Flex align={'start'} gap={10}>
+        <Flex
+          align={{ base: 'center', lg: 'start' }}
+          direction={{ base: 'column', lg: 'row' }}
+          gap={10}
+        >
           <Flex
             w={150}
             h={150}
@@ -170,7 +181,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
               {logo ? '팀 로고 수정' : '팀 로고 등록'}
             </Button>
           </Flex>
-          <Flex flex={1} direction={'column'} gap={6}>
+          <Flex w={'100%'} flex={1} direction={'column'} gap={6}>
             <Flex direction={'column'} gap={2}>
               <Text fontSize={'sm'} fontWeight={'bold'}>
                 팀 이름
@@ -312,7 +323,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
           팀원
         </Text>
         {users ? (
-          <TeamUserList users={users.data} />
+          <TeamUserList team={team} users={users.data} />
         ) : (
           <Flex h={200} justify={'center'} align={'center'}>
             {usersIsFetching ? (
@@ -395,14 +406,35 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
         )}
       </Flex>
       <Flex align={'center'} justify={'center'} py={20}>
-        <Button
-          size={'sm'}
-          fontWeight={'bold'}
-          colorPalette={'red'}
-          variant={'ghost'}
-        >
-          팀 해체
-        </Button>
+        <ConfirmDialog
+          buttonText={'팀 해체'}
+          buttonStyle={{
+            size: 'sm',
+            fontWeight: 'bold',
+            colorPalette: 'red',
+            variant: 'ghost',
+          }}
+          title={'팀 해체'}
+          description={
+            '정말 팀을 해체하시겠습니까?\n현재 팀에 소속된 팀원이 있는 경우 팀을 해체할 수 없습니다.'
+          }
+          onConfirm={() => {
+            deleteTeam(
+              {
+                id: team.id,
+              },
+              {
+                onSuccess: () => {
+                  toaster.create({
+                    type: 'success',
+                    title: '팀 해체 완료',
+                  })
+                  router.push(PagePaths.Teams)
+                },
+              },
+            )
+          }}
+        />
       </Flex>
     </Flex>
   )

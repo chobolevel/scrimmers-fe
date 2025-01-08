@@ -17,6 +17,7 @@ export enum ApiV1Paths {
   USER_SUMMONERS = '/api/v1/users/summoners/:id?',
 
   TEAMS = '/api/v1/teams/:id?',
+  BANISH_TEAM_USERS = '/api/v1/teams/:id?/banish',
 
   TEAM_IMAGES = '/api/v1/teams/:teamId?/images/:teamImageId?',
 

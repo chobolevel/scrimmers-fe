@@ -98,6 +98,7 @@ export interface User extends Schema {
 
 export interface UserDetail extends Schema {
   team?: Team
+  team_joined_at?: number
   email: string
   login_type: UserLoginType
   nickname: string
@@ -109,6 +110,7 @@ export interface UserDetail extends Schema {
   summoners: UserSummoner[]
   role: UserRoleType
   profile_image?: UserImage
+  is_team_owner: boolean
 }
 
 export interface CreateUserRequest {
