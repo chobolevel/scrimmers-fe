@@ -10,42 +10,42 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button, Flex, Text, Textarea } from '@chakra-ui/react'
-import { Team } from '@/apis'
-import { useForm } from 'react-hook-form'
-import {
-  CreateTeamJoinRequest,
-  useCreateTeamJoinRequest,
-} from '@/apis/team/join'
 import { useCallback, useState } from 'react'
 import { ErrorMessage } from '@hookform/error-message'
 import { ErrorText } from '@/components'
+import { Team } from '@/apis'
+import { useForm } from 'react-hook-form'
+import { CreateScrimReqRequest, useCreateScrimReq } from '@/apis/scrim'
 import { toaster } from '@/components/ui/toaster'
 
-interface TeamJoinRequestRegistrationDialogProps {
-  team: Team
+interface CreateScimReqDialogProps {
+  fromTeam: Team
+  toTeam: Team
 }
 
-const TeamJoinRequestRegistrationDialog = ({
-  team,
-}: TeamJoinRequestRegistrationDialogProps) => {
+const CreateScrimReqDialog = ({
+  fromTeam,
+  toTeam,
+}: CreateScimReqDialogProps) => {
   const [open, setOpen] = useState<boolean>(false)
 
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<CreateTeamJoinRequest>({
+  } = useForm<CreateScrimReqRequest>({
     defaultValues: {
-      team_id: team.id,
+      from_team_id: fromTeam.id,
+      to_team_id: toTeam.id,
     },
   })
 
-  const { mutate: createTeamJoinRequest } = useCreateTeamJoinRequest()
+  const { mutate: createScrimReq } = useCreateScrimReq()
   return (
     <DialogRoot lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
       <DialogTrigger asChild>
         <Button size={'sm'} fontWeight={'bold'} colorPalette={'blue'}>
-          가입 신청
+          스크림 신청
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -54,11 +54,12 @@ const TeamJoinRequestRegistrationDialog = ({
           as={'form'}
           onSubmit={handleSubmit(
             useCallback((data) => {
-              createTeamJoinRequest(data, {
+              createScrimReq(data, {
                 onSuccess: () => {
+                  setOpen(false)
                   toaster.create({
                     type: 'success',
-                    title: `${team.name} 가입 신청 완료`,
+                    title: '스크림 신청 완료',
                   })
                 },
               })
@@ -66,19 +67,19 @@ const TeamJoinRequestRegistrationDialog = ({
           )}
         >
           <DialogHeader>
-            <DialogTitle>{team.name} 가입 신청</DialogTitle>
+            <DialogTitle>{toTeam.name}팀에게 스크림 신청</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <Flex direction={'column'} gap={2}>
-              <Text fontWeight={'bold'}>소개글</Text>
+              <Text fontWeight={'bold'}>신청문</Text>
               <Textarea
-                placeholder={'본인을 자유롭게 표현해보세요!'}
+                placeholder={'스크림 신청문'}
                 minH={140}
                 {...register('comment', {
-                  required: '소개글이 입력되지 않았습니다.',
+                  required: '신청문이 입력되지 않았습니다.',
                   minLength: {
                     value: 10,
-                    message: '소개글은 최소 10자 이상 작성해야합니다.',
+                    message: '신청문은 최소 10자 이상 작성해야합니다.',
                   },
                 })}
               />
@@ -104,4 +105,4 @@ const TeamJoinRequestRegistrationDialog = ({
   )
 }
 
-export default TeamJoinRequestRegistrationDialog
+export default CreateScrimReqDialog

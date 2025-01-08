@@ -11,6 +11,7 @@ import {
 import {
   Team,
   useCreateTeamImage,
+  useDeleteTeam,
   useDeleteTeamImage,
   useGetUsers,
   useInvalidate,
@@ -20,12 +21,15 @@ import {
 import React, { useMemo, useRef, useState } from 'react'
 import { RiTeamFill } from 'react-icons/ri'
 import {
+  ConfirmDialog,
   ImageUploader,
+  ReceivedScrimReqList,
+  SentScrimReqList,
   TeamJoinRequestList,
   TeamLeaveRequestList,
   TeamUserList,
 } from '@/components'
-import { ApiV1Paths, toUrl } from '@/constants'
+import { ApiV1Paths, PagePaths, toUrl } from '@/constants'
 import { NumberInputField, NumberInputRoot } from '@/components/ui/number-input'
 import { toaster } from '@/components/ui/toaster'
 import { useGetTeamJoinRequests } from '@/apis/team/join'
@@ -36,6 +40,9 @@ import {
   PaginationRoot,
 } from '@/components/ui/pagination'
 import { useGetTeamLeaveRequests } from '@/apis/team/leave'
+import { router } from 'next/client'
+import { useGetScrimReqs } from '@/apis/scrim'
+import { IoMdRefreshCircle } from 'react-icons/io'
 
 interface ModifyTeamFormProps {
   team: Team
@@ -50,31 +57,63 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
   const logoImageUploaderRef = useRef<HTMLInputElement>(null)
   const [teamJoinRequestPage, setTeamJoinRequestPage] = useState<number>(1)
   const [teamLeaveRequestPage, setTeamLeaveRequestPage] = useState<number>(1)
+  const [sentScrimReqsPage, setSentScrimReqsPage] = useState<number>(1)
+  const [receivedScrimReqsPage, setReceivedScrimReqsPage] = useState<number>(1)
 
   const invalidateTeam = useInvalidate(toUrl(ApiV1Paths.TEAMS, { id: team.id }))
   const { data: users, isFetching: usersIsFetching } = useGetUsers(
-    { teamId: team.id },
+    {
+      teamId: team.id,
+      limitCount: team.head_count,
+    },
     !!team.id,
   )
-  const { data: teamJoinRequests, isFetching: teamJoinRequestsIsFetching } =
-    useGetTeamJoinRequests(
-      {
-        teamId: team.id,
-        skipCount: (teamJoinRequestPage - 1) * LIMIT_COUNT,
-        limitCount: LIMIT_COUNT,
-      },
-      !!team.id,
-    )
-  const { data: teamLeaveRequests, isFetching: teamLeaveRequestsIsFetching } =
-    useGetTeamLeaveRequests(
-      {
-        teamId: team.id,
-        skipCount: (teamLeaveRequestPage - 1) * LIMIT_COUNT,
-        limitCount: LIMIT_COUNT,
-      },
-      !!team.id,
-    )
+  const {
+    data: teamJoinRequests,
+    isFetching: teamJoinRequestsIsFetching,
+    refetch: refetchTeamJoinRequests,
+  } = useGetTeamJoinRequests(
+    {
+      teamId: team.id,
+      skipCount: (teamJoinRequestPage - 1) * LIMIT_COUNT,
+      limitCount: LIMIT_COUNT,
+    },
+    !!team.id,
+  )
+  const {
+    data: teamLeaveRequests,
+    isFetching: teamLeaveRequestsIsFetching,
+    refetch: refetchTeamLeaveRequests,
+  } = useGetTeamLeaveRequests(
+    {
+      teamId: team.id,
+      skipCount: (teamLeaveRequestPage - 1) * LIMIT_COUNT,
+      limitCount: LIMIT_COUNT,
+    },
+    !!team.id,
+  )
+  const {
+    data: sentScrimReqs,
+    isFetching: isSentScrimReqsFetching,
+    refetch: refetchSentScrimReqs,
+  } = useGetScrimReqs(
+    {
+      fromTeamId: team.id,
+    },
+    !!team.id,
+  )
+  const {
+    data: receivedScrimReqs,
+    isFetching: isReceivedScrimReqsFetching,
+    refetch: refetchReceivedScrimReq,
+  } = useGetScrimReqs(
+    {
+      toTeamId: team.id,
+    },
+    !!team.id,
+  )
   const { mutate: updateTeam } = useUpdateTeam()
+  const { mutate: deleteTeam } = useDeleteTeam()
   const { mutate: createTeamImage } = useCreateTeamImage()
   const { mutate: updateTeamImage } = useUpdateTeamImage()
   const { mutate: deleteTeamImage } = useDeleteTeamImage()
@@ -86,7 +125,11 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
         <Text fontSize={'lg'} fontWeight={'bold'}>
           팀 정보
         </Text>
-        <Flex align={'start'} gap={10}>
+        <Flex
+          align={{ base: 'center', lg: 'start' }}
+          direction={{ base: 'column', lg: 'row' }}
+          gap={10}
+        >
           <Flex
             w={150}
             h={150}
@@ -170,7 +213,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
               {logo ? '팀 로고 수정' : '팀 로고 등록'}
             </Button>
           </Flex>
-          <Flex flex={1} direction={'column'} gap={6}>
+          <Flex w={'100%'} flex={1} direction={'column'} gap={6}>
             <Flex direction={'column'} gap={2}>
               <Text fontSize={'sm'} fontWeight={'bold'}>
                 팀 이름
@@ -312,7 +355,7 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
           팀원
         </Text>
         {users ? (
-          <TeamUserList users={users.data} />
+          <TeamUserList modifiable={true} team={team} users={users.data} />
         ) : (
           <Flex h={200} justify={'center'} align={'center'}>
             {usersIsFetching ? (
@@ -325,9 +368,18 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
       </Flex>
       <Separator />
       <Flex direction={'column'} gap={6}>
-        <Text fontSize={'lg'} fontWeight={'bold'}>
-          팀 가입 신청
-        </Text>
+        <Flex align={'center'} gap={2}>
+          <Text fontSize={'lg'} fontWeight={'bold'}>
+            팀 가입 신청
+          </Text>
+          <IoMdRefreshCircle
+            size={30}
+            cursor={'pointer'}
+            onClick={() => {
+              refetchTeamJoinRequests()
+            }}
+          />
+        </Flex>
         {teamJoinRequests ? (
           <>
             <TeamJoinRequestList requests={teamJoinRequests.data} />
@@ -360,9 +412,18 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
         )}
       </Flex>
       <Flex direction={'column'} gap={6}>
-        <Text fontSize={'lg'} fontWeight={'bold'}>
-          팀 탈퇴 신청
-        </Text>
+        <Flex align={'center'} gap={2}>
+          <Text fontSize={'lg'} fontWeight={'bold'}>
+            팀 탈퇴 신청
+          </Text>
+          <IoMdRefreshCircle
+            size={30}
+            cursor={'pointer'}
+            onClick={() => {
+              refetchTeamLeaveRequests()
+            }}
+          />
+        </Flex>
         {teamLeaveRequests ? (
           <>
             <TeamLeaveRequestList requests={teamLeaveRequests.data} />
@@ -394,15 +455,124 @@ const ModifyTeamForm = ({ team }: ModifyTeamFormProps) => {
           </Flex>
         )}
       </Flex>
+      <Flex direction={'column'} gap={6}>
+        <Flex align={'center'} gap={2}>
+          <Text fontSize={'lg'} fontWeight={'bold'}>
+            보낸 스크림 요청
+          </Text>
+          <IoMdRefreshCircle
+            size={30}
+            cursor={'pointer'}
+            onClick={() => {
+              refetchSentScrimReqs()
+            }}
+          />
+        </Flex>
+        {sentScrimReqs ? (
+          <>
+            <SentScrimReqList scrimReqs={sentScrimReqs.data} />
+            <Flex align={'center'} justify={'center'}>
+              <PaginationRoot
+                page={sentScrimReqsPage}
+                pageSize={LIMIT_COUNT}
+                count={sentScrimReqs.total_count}
+                onPageChange={(e) => setSentScrimReqsPage(e.page)}
+                variant={'subtle'}
+              >
+                <Flex align={'center'} gap={2}>
+                  <PaginationPrevTrigger />
+                  <PaginationItems />
+                  <PaginationNextTrigger />
+                </Flex>
+              </PaginationRoot>
+            </Flex>
+          </>
+        ) : (
+          <Flex h={200} justify={'center'} align={'center'}>
+            {isSentScrimReqsFetching ? (
+              <Spinner size={'lg'} />
+            ) : (
+              <Text fontWeight={'bold'}>
+                검색 조건에 맞는 스크림 요청이 없습니다.
+              </Text>
+            )}
+          </Flex>
+        )}
+      </Flex>
+      <Flex direction={'column'} gap={6}>
+        <Flex align={'center'} gap={2}>
+          <Text fontSize={'lg'} fontWeight={'bold'}>
+            받은 스크림 요청
+          </Text>
+          <IoMdRefreshCircle
+            size={30}
+            cursor={'pointer'}
+            onClick={() => {
+              refetchReceivedScrimReq()
+            }}
+          />
+        </Flex>
+        {receivedScrimReqs ? (
+          <>
+            <ReceivedScrimReqList scrimReqs={receivedScrimReqs.data} />
+            <Flex align={'center'} justify={'center'}>
+              <PaginationRoot
+                page={receivedScrimReqsPage}
+                pageSize={LIMIT_COUNT}
+                count={receivedScrimReqs.total_count}
+                onPageChange={(e) => setReceivedScrimReqsPage(e.page)}
+                variant={'subtle'}
+              >
+                <Flex align={'center'} gap={2}>
+                  <PaginationPrevTrigger />
+                  <PaginationItems />
+                  <PaginationNextTrigger />
+                </Flex>
+              </PaginationRoot>
+            </Flex>
+          </>
+        ) : (
+          <Flex h={200} justify={'center'} align={'center'}>
+            {isReceivedScrimReqsFetching ? (
+              <Spinner size={'lg'} />
+            ) : (
+              <Text fontWeight={'bold'}>
+                검색 조건에 맞는 스크림 요청이 없습니다.
+              </Text>
+            )}
+          </Flex>
+        )}
+      </Flex>
       <Flex align={'center'} justify={'center'} py={20}>
-        <Button
-          size={'sm'}
-          fontWeight={'bold'}
-          colorPalette={'red'}
-          variant={'ghost'}
-        >
-          팀 해체
-        </Button>
+        <ConfirmDialog
+          buttonText={'팀 해체'}
+          buttonStyle={{
+            size: 'sm',
+            fontWeight: 'bold',
+            colorPalette: 'red',
+            variant: 'ghost',
+          }}
+          title={'팀 해체'}
+          description={
+            '정말 팀을 해체하시겠습니까?\n현재 팀에 소속된 팀원이 있는 경우 팀을 해체할 수 없습니다.'
+          }
+          onConfirm={() => {
+            deleteTeam(
+              {
+                id: team.id,
+              },
+              {
+                onSuccess: () => {
+                  toaster.create({
+                    type: 'success',
+                    title: '팀 해체 완료',
+                  })
+                  router.push(PagePaths.Teams)
+                },
+              },
+            )
+          }}
+        />
       </Flex>
     </Flex>
   )

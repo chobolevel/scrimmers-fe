@@ -48,6 +48,11 @@ export interface UpdateTeamRequest {
   update_mask: TeamUpdateMask[]
 }
 
+export interface BanishTeamUsersRequest {
+  team_id: ID
+  user_ids: ID[]
+}
+
 export interface DeleteTeamRequest {
   id: ID
 }
@@ -81,6 +86,16 @@ export const useUpdateTeam = () => {
     mutationFn: (request: UpdateTeamRequest) =>
       Api.put<ApiResponse<ID>>(
         toUrl(ApiV1Paths.TEAMS, { id: request.id }),
+        request,
+      ),
+  })
+}
+
+export const useBanishTeamUsers = () => {
+  return useMutation({
+    mutationFn: (request: BanishTeamUsersRequest) =>
+      Api.put<ID>(
+        toUrl(ApiV1Paths.BANISH_TEAM_USERS, { id: request.team_id }),
         request,
       ),
   })

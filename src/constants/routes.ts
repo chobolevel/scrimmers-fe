@@ -17,6 +17,7 @@ export enum ApiV1Paths {
   USER_SUMMONERS = '/api/v1/users/summoners/:id?',
 
   TEAMS = '/api/v1/teams/:id?',
+  BANISH_TEAM_USERS = '/api/v1/teams/:id?/banish',
 
   TEAM_IMAGES = '/api/v1/teams/:teamId?/images/:teamImageId?',
 
@@ -28,6 +29,10 @@ export enum ApiV1Paths {
   REJECT_TEAM_LEAVE_REQUEST = '/api/v1/teams/leave-requests/:id?/reject',
 
   PRESIGNED_URL = '/api/v1/upload/presigned-url',
+
+  SCRIM_REQUESTS = '/api/v1/scrims/requests/:id?',
+  APPROVE_SCRIM_REQUEST = '/api/v1/scrims/requests/:id?/approve',
+  REJECT_SCRIM_REQUEST = '/api/v1/scrims/requests/:id?/reject',
 }
 
 export enum PagePaths {

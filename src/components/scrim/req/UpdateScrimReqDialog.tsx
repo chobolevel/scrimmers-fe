@@ -10,42 +10,44 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button, Flex, Text, Textarea } from '@chakra-ui/react'
-import { Team } from '@/apis'
-import { useForm } from 'react-hook-form'
 import {
-  CreateTeamJoinRequest,
-  useCreateTeamJoinRequest,
-} from '@/apis/team/join'
+  ScrimReq,
+  UpdateScrimReqRequest,
+  useInvalidate,
+  useUpdateScrimReq,
+} from '@/apis'
 import { useCallback, useState } from 'react'
-import { ErrorMessage } from '@hookform/error-message'
+import { useForm } from 'react-hook-form'
 import { ErrorText } from '@/components'
+import { ErrorMessage } from '@hookform/error-message'
+import { ApiV1Paths, toUrl } from '@/constants'
 import { toaster } from '@/components/ui/toaster'
 
-interface TeamJoinRequestRegistrationDialogProps {
-  team: Team
+interface UpdateScrimReqDialogProps {
+  scrimReq: ScrimReq
 }
 
-const TeamJoinRequestRegistrationDialog = ({
-  team,
-}: TeamJoinRequestRegistrationDialogProps) => {
+const UpdateScrimReqDialog = ({ scrimReq }: UpdateScrimReqDialogProps) => {
   const [open, setOpen] = useState<boolean>(false)
-
+  const invalidate = useInvalidate(toUrl(ApiV1Paths.SCRIM_REQUESTS))
   const {
     handleSubmit,
     register,
     formState: { errors },
-  } = useForm<CreateTeamJoinRequest>({
+  } = useForm<UpdateScrimReqRequest>({
     defaultValues: {
-      team_id: team.id,
+      id: scrimReq.id,
+      comment: scrimReq.comment,
+      update_mask: ['COMMENT'],
     },
   })
 
-  const { mutate: createTeamJoinRequest } = useCreateTeamJoinRequest()
+  const { mutate: updateScrimReq } = useUpdateScrimReq()
   return (
     <DialogRoot lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
       <DialogTrigger asChild>
-        <Button size={'sm'} fontWeight={'bold'} colorPalette={'blue'}>
-          가입 신청
+        <Button size={'xs'} fontWeight={'bold'} variant={'surface'}>
+          수정
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -54,11 +56,13 @@ const TeamJoinRequestRegistrationDialog = ({
           as={'form'}
           onSubmit={handleSubmit(
             useCallback((data) => {
-              createTeamJoinRequest(data, {
+              updateScrimReq(data, {
                 onSuccess: () => {
+                  setOpen(false)
+                  invalidate()
                   toaster.create({
                     type: 'success',
-                    title: `${team.name} 가입 신청 완료`,
+                    title: '스크림 요청 수정 완료',
                   })
                 },
               })
@@ -66,19 +70,19 @@ const TeamJoinRequestRegistrationDialog = ({
           )}
         >
           <DialogHeader>
-            <DialogTitle>{team.name} 가입 신청</DialogTitle>
+            <DialogTitle>스크림 신청문</DialogTitle>
           </DialogHeader>
           <DialogBody>
             <Flex direction={'column'} gap={2}>
-              <Text fontWeight={'bold'}>소개글</Text>
+              <Text fontWeight={'bold'}>신청문</Text>
               <Textarea
-                placeholder={'본인을 자유롭게 표현해보세요!'}
+                placeholder={'스크림 신청문'}
                 minH={140}
                 {...register('comment', {
-                  required: '소개글이 입력되지 않았습니다.',
+                  required: '신청문이 입력되지 않았습니다.',
                   minLength: {
                     value: 10,
-                    message: '소개글은 최소 10자 이상 작성해야합니다.',
+                    message: '신청문은 최소 10자 이상 작성해야합니다.',
                   },
                 })}
               />
@@ -90,11 +94,11 @@ const TeamJoinRequestRegistrationDialog = ({
             </Flex>
           </DialogBody>
           <DialogFooter>
-            <Button variant={'surface'} type={'submit'}>
-              신청
+            <Button type={'submit'} fontWeight={'bold'} variant={'surface'}>
+              수정
             </Button>
             <DialogActionTrigger asChild>
-              <Button fontWeight={'bold'}>취소</Button>
+              <Button fontWeight={'bold'}>닫기</Button>
             </DialogActionTrigger>
           </DialogFooter>
         </Flex>
@@ -104,4 +108,4 @@ const TeamJoinRequestRegistrationDialog = ({
   )
 }
 
-export default TeamJoinRequestRegistrationDialog
+export default UpdateScrimReqDialog
