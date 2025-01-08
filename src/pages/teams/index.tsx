@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import { ResponsiveLayout } from '@/layout'
-import { useGetTeams } from '@/apis'
+import { useGetMe, useGetTeams } from '@/apis'
 import { Button, Flex, Spinner, Text } from '@chakra-ui/react'
 import { TeamList } from '@/components'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   PaginationItems,
   PaginationNextTrigger,
@@ -20,11 +20,14 @@ const TeamListPage = () => {
   const router = useRouter()
   const [page, setPage] = useState<number>(1)
 
+  const { data: me } = useGetMe()
   const { data: teams, isFetching } = useGetTeams({
     skipCount: (page - 1) * LIMIT_COUNT,
     limitCount: LIMIT_COUNT,
     orderTypes: ['CREATED_AT_DESC'],
   })
+
+  const team = useMemo(() => me?.team, [me])
   return (
     <>
       <Head>
@@ -42,16 +45,18 @@ const TeamListPage = () => {
             <Text fontSize={'xl'} fontWeight={'bold'}>
               팀
             </Text>
-            <Button
-              size={'sm'}
-              colorPalette={'blue'}
-              fontWeight={'bold'}
-              onClick={() => {
-                router.push(PagePaths.TeamRegistration)
-              }}
-            >
-              <RiTeamFill />팀 등록
-            </Button>
+            {!team && (
+              <Button
+                size={'sm'}
+                colorPalette={'blue'}
+                fontWeight={'bold'}
+                onClick={() => {
+                  router.push(PagePaths.TeamRegistration)
+                }}
+              >
+                <RiTeamFill />팀 등록
+              </Button>
+            )}
           </Flex>
           {teams ? (
             <>
