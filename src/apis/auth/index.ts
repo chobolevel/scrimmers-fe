@@ -28,7 +28,6 @@ export const useLogout = () => {
       router.push(toUrl(PagePaths.HOME)).then(() => {
         toaster.create({
           title: '로그아웃',
-          description: '로그아웃이 완료되었습니다.',
         })
       })
     },

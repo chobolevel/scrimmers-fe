@@ -3,7 +3,11 @@ import { RiTeamFill } from 'react-icons/ri'
 import { FaCrown } from 'react-icons/fa6'
 import { PagePaths, toUrl } from '@/constants'
 import { MdSupervisorAccount } from 'react-icons/md'
-import { TeamJoinRequestRegistrationDialog, TeamUserList } from '@/components'
+import {
+  CreateScrimReqDialog,
+  TeamJoinRequestRegistrationDialog,
+  TeamUserList,
+} from '@/components'
 import React, { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { Team, useGetMe, useGetUsers } from '@/apis'
@@ -25,6 +29,8 @@ const TeamDetail = ({ team }: TeamDetailProps) => {
 
   const logo = useMemo(() => team?.logo, [team])
   const myTeam = useMemo(() => me?.team, [me])
+  const isMyTeam = useMemo(() => team.id === myTeam?.id, [team, myTeam])
+  const isMyTeamOwner = useMemo(() => me?.is_team_owner, [me])
   return (
     <Flex direction={'column'} gap={6}>
       <Flex direction={'column'} gap={4}>
@@ -32,7 +38,12 @@ const TeamDetail = ({ team }: TeamDetailProps) => {
           <Text fontSize={'lg'} fontWeight={'bold'}>
             팀 정보
           </Text>
-          {!myTeam && <TeamJoinRequestRegistrationDialog team={team} />}
+          <Flex align={'center'} gap={2}>
+            {!myTeam && <TeamJoinRequestRegistrationDialog team={team} />}
+            {!isMyTeam && myTeam && isMyTeamOwner && (
+              <CreateScrimReqDialog fromTeam={myTeam} toTeam={team} />
+            )}
+          </Flex>
         </Flex>
         <Flex p={4} align={'center'} gap={10}>
           <Flex direction={'column'} align={'center'} w={100} h={100} gap={2}>
